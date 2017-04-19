@@ -1,0 +1,6 @@
+NP      -> Adj NP [0.5] | Pronoun [0.1] | Det Nom [0.4]
+Nom     -> Noun Nom [0.5] | Noun [0.5]
+Pronoun -> *[1.0]
+Det     -> *[1.0]
+Noun    -> *[1.0]
+
