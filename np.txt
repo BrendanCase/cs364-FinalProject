@@ -1,6 +1,6 @@
-NP      -> Adj NP [0.5] | Pronoun [0.1] | Det Nom [0.1] | Nom [0.1] | Det Nom PP [0.2]
+NP      -> Nom [0,7] | | Det Nom [0.2] | Pronoun [0.1]
+Nom     -> Adj Nom [0.2] | Noun Nom [0.3] | Noun [0.3] | Nom PP [0.2]
 PP      -> Prep NP [1.0]
-Nom     -> Noun Nom [0.5] | Noun [0.5]
 Prep    -> *[1.0]
 Adj     -> *[1.0]
 Pronoun -> *[1.0]
