@@ -1,6 +1,6 @@
 import nltk
 
-class LengthRule():
+class LengthRule(metric.Metric):
     def __init__(self, second, first, zero):
         self.second = second
         self.first = first
