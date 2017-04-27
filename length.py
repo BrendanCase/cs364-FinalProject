@@ -9,7 +9,7 @@ class LengthRule(metric.Metric):
     def eval(self, string):
         return self.second * (len(string) ** 2) + self.first * len(string) + self.zero
     
-    def mutate(self, change):
+    def mutate(self, bull, change):
         if rand.Random > .5:
             self.second = self.second - change -.5 + rand.Random
         if rand.Random >.5:
