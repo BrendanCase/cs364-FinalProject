@@ -9,5 +9,5 @@ class Metric():
         pass
 
     # @param string The string to learn from
-    def mutate(self, string):
+    def mutate(self, string, value):
         pass
