@@ -32,9 +32,9 @@ class Producer:
     def induceGrammar(self):
         try:
             ret = nltk.grammar.PCFG.fromstring(self.grammar_string)
-        except ValueError:
-            print("There was something wrong with %s's grammar!" %self.user)
-            print(self.grammar_string)
+        except ValueError as e:
+            print("There was something wrong with %s's grammar:" %self.user)
+            print(e)
             self.grammar_string = ''.join(open('default_grammar.pcfg'))
             ret = nltk.grammar.PCFG.fromstring(self.grammar_string)
         return ret
@@ -72,7 +72,7 @@ class Producer:
         for prob, terminal in zip(probs, termList):
             rule_str += self._makerhs(terminal, prob)
         new_rule = rule_str[:-2] #get rid of last " |"
-        old_rule = termType+ ' -> * [1.0]'
+        old_rule = termType+ ' -> \'*\' [1.0]'
         self.grammar_string = self.grammar_string.replace(old_rule, new_rule)
         #return nothing, the grammar string rep has been updated!
 
@@ -99,4 +99,4 @@ class Producer:
 
 
     def _makerhs(self, T, P): #return a rhs form of production string: " T [P] | "
-        return '\'' + T + '\'' + ' [' + str(P) + '] | '
+        return '\"' + T + '\"' + ' [' + str(P) + '] | '
