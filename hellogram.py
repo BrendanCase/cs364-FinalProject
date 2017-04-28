@@ -1,14 +1,32 @@
+import nltk
 from nltk.corpus import brown
+from nltk.corpus import gutenberg
 from random import sample
 
 from producer.producer_class import Producer
 
-Adjectives = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'ADJ'])
-Pronouns = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'PRON'])
-Determiners = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'DET'])
-Nouns = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'NOUN'])
+Brown = brown.tagged_words(tagset='universal')
+Carroll = nltk.pos_tag(gutenberg.words('whitman-leaves.txt'))
+
+#Adjectives1 = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'ADJ'])
+Adjectives2 = set(
+    [word for (word, tag) in Carroll
+     if tag == 'JJ' and len(word) > 3]
+)
+Pronouns = set([word for (word, tag) in Brown if tag == 'PRON'])
+Determiners = set([word for (word, tag) in Brown if tag == 'DET'])
+#Nouns1 = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'NOUN'])
+Nouns2 = set(
+    [word for (word, tag) in Carroll
+     if tag == 'NN' and len(word) > 3]
+)
 IntransitiveVerbs = set([w.strip('\n') for w in open('intransitives.txt')])
-Verbs = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'VERB'])
+#Verbs1 = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'VERB'])
+Verbs2 = set(
+    [word for (word, tag) in Carroll
+     if tag == 'VB' and len(word) > 3]
+)
+
 
 def main():
     test = Producer('/u/_junebug_', """
@@ -26,16 +44,18 @@ def main():
         TV -> '*' [1.0]""")
 
     test.addTerminals('Prep', ['on', 'from', 'to'])
-    test.addTerminals('Adj', sample(Adjectives, 15))
-    test.addTerminals('Pronoun', sample(Pronouns, 8))
-    test.addTerminals('Det', sample(Determiners, 6))
-    test.addTerminals('Noun', sample(Nouns, 20))
+    test.addTerminals('Adj', sample(Adjectives2, 30))
+    test.addTerminals('Pronoun', sample(Pronouns, 10))
+    test.addTerminals('Det', Determiners)
+    test.addTerminals('Noun', sample(Nouns2, 50))
     test.addTerminals('IV', sample(IntransitiveVerbs, 10))
-    test.addTerminals('TV', sample(Verbs, 20))
+    test.addTerminals('TV', sample(Verbs2, 50))
 
     gram = test.induceGrammar()
+    cp = nltk.ChartParser(gram)
     for i in range(10):
-        print(test.getPost(gram))
+        (prods, post) = test.getPost(gram)
+        print(post)
         print()
 
 

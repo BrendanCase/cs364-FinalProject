@@ -1,10 +1,9 @@
 agree
 appear
 arrive
-become
+come
 belong
 collapse
-consist
 cost
 cough
 cry
@@ -16,7 +15,6 @@ exist
 fall
 go
 happen
-have
 hiccup / hic-cough
 inquire
 knock
