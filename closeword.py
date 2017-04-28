@@ -1,6 +1,6 @@
 import nltk
 
-chance = .2
+CHANCE = .2
 
 class WordRule(metric.Metric):
     
@@ -30,7 +30,7 @@ class WordRule(metric.Metric):
 
     def mutate(self, string, value):
         words = string.split(' ')
-        if random.Random < chance:
+        if random.Random < CHANCE:
             return
         if value < 0:
             word = random.choice(words)
