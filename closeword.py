@@ -1,6 +1,9 @@
 import nltk
 
+chance = .2
+
 class WordRule(metric.Metric):
+    
     def __init__(self, goodWords, badWords):
         self.goodWords = goodWords
         self.badWords = badWords
@@ -27,8 +30,21 @@ class WordRule(metric.Metric):
 
     def mutate(self, string, value):
         words = string.split(' ')
+        if random.Random < chance:
+            return
         if value < 0:
-            self.badWords = self.badWords | set(words)
+            word = random.choice(words)
+            if word in self.goodWords:
+                return
+            if word not in self.badWords:
+                self.goodWords.append(word)
+            else:
+                self.badWords.remove(word)
         elif value > 0:
-            self.goodWords = self.goodWords | set(words)
-
+            word = random.choice(words)
+            if word in self.badWords:
+                return
+            if word not in self.goodWords:
+                self.badWords.append(word)
+            else:
+                self.goodWords.remove(word)
