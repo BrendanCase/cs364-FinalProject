@@ -11,8 +11,10 @@ class LengthRule(metric.Metric):
     
     def mutate(self, bull, change):
         if rand.Random > .5:
-            self.second = self.second - change -.5 + rand.Random
+            self.second = self.second - change
+            if self.second == 0:
+                self.second = -1
         if rand.Random >.5:
-            self.first = self.first - change -.5 + rand.Random
+            self.first = self.first - change
         if rand.Random > .5:
-            self.zero = self.zero - change -.5 + rand.Random
+            self.zero = self.zero - change
