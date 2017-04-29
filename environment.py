@@ -21,17 +21,17 @@ class Post():
         self.downvotes = 0
 
 class User():
-    def __init__(self, name, grammar generation_size=10):
+    def __init__(self, name, grammar, iteration_size=10):
         self.producer = Producer()
         self.evaluator = Evaluator()
         self.name = name
         self.parent_grammar = grammar
         self.child_grammars = self.get_children(grammar) 
-        self.generations = []
-        self.generation_size=generation_size
+        self.iterations = []
+        self.iteration_size=iteration_size
 
     def get_iteration(self, iteration_index):
-        return self.producer.get_iteration(iteration_index)
+        return self.producer.get_iteration(iteration_index, iteration_size)
 
     def evaluate_iteration(self, iteration):
         for post in iteration:
@@ -63,4 +63,6 @@ class Environment():
         for user in self.producers:
             user.mutate()
         iteration += 1
+
+    def log_generatio
         

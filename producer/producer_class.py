@@ -95,13 +95,12 @@ class Grammar:
 
 class Producer:
 
-    def __init__(self, user, gramstring, iterationSize = 10):
+    def __init__(self, user, gramstring):
         self.user = user
         self.grammar_string = gramstring #the skeleton grammar string for this producer to start with
         self.parent_grammar = Grammar(self.induce_grammar())
         self.child_grammars = self.get_children()
         self.grammars = self.get_grammars()
-        self.iteration_size = iterationSize
 
     """ inducegrammar
     return a probabilistic context-free grammar from the grammar string
@@ -127,10 +126,11 @@ class Producer:
     def get_grammars(self):
         return [self.parent_grammar] + self.child_grammars
 
-    def get_iteration(self, iteration_index):
+    def get_iteration(self, iteration_index, iteration_size):
         current_iteration = []
         for grammar in self.grammars:
-            current_iteration.append(grammar.make_post(self.user, iteration_index))
+            for i in range(iteration_size):
+                current_iteration.append(grammar.make_post(self.user, iteration_index))
         return current_iteration
 
     def mutate(self):
