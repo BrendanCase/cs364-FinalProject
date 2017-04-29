@@ -47,7 +47,7 @@ class WordRule(metric.Metric):
         return self.getSentanceScore(string, self.goodWords) - self.getSentanceScore(string, self.badWords)
 
     def mutate(self, string, value):
-        """ jake write description? :D"""
+        """ if the sentance was upvoted, remove a word from it from goodWords or put it in badWords.  If it was downvoted, remove a word from it from badwords, or add it to goodWords """
         words = string.split(' ')
         if random.Random < chance:
             return

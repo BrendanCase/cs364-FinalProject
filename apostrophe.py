@@ -12,4 +12,10 @@ class ApostropheRule(metric.Metric):
         average = total/len([word in string])
         return self.second * exp(max) + self.first * log(total*average) + self.zero
     
-    def mutate(self,
+    def mutate(self, bull, change):
+        if rand.Random > .5:
+            self.second = self.second - change
+        if rand.Random >.5:
+            self.first = self.first - change
+        if rand.Random > .5:
+            self.zero = self.zero - change
