@@ -11,37 +11,34 @@ import Producer from producer_class
         generation:     The round or generation the post was made in.
     """
 class Post():
-    def __init__(self, string, author, genearation=None):
+    def __init__(self, string, author, iteration_index=None):
         self.text = string
         self.author = author
-        self.generation = generation
+        self.iteration_index = iteration_index
         self.timestamp = datetime.datetime.today()
         self.score = 0
         self.upvotes = 0
         self.downvotes = 0
 
-
 class User():
-    def __init__(self, name, generation_size=10):
+    def __init__(self, name, grammar generation_size=10):
         self.producer = Producer()
         self.evaluator = Evaluator()
         self.name = name
+        self.parent_grammar = grammar
+        self.child_grammars = self.get_children(grammar) 
         self.generations = []
-        self.generation_size=10
-        
-    def make_post(self, generation):
-        text = self.producer.get_post(self.producer.grammar)
-        return Post(text, self.name, generation)
+        self.generation_size=generation_size
 
-    def get_generation(self, generation):
-        current_generation = []
-        for i in range(self.generation_size):
-            current_generation.append(self.make_post(generation))
-        self.generations.append(current_generation)
-        return current_generation
+    def get_iteration(self, iteration_index):
+        return self.producer.get_iteration(iteration_index)
 
-    def evaluate_post(self, post):
-        self.evaluator.evaluate(post.text)
+    def evaluate_iteration(self, iteration):
+        for post in iteration:
+            self.evaluator.evaluate(post.text)
+
+    def mutate():
+        self.producer.mutate()
 
 class Environment():
     def __init__(self):
@@ -57,11 +54,13 @@ class Environment():
     def get_consumers(self):
         return [user for user in self.users if user.consumer]
 
-    def run_generation():
+    def run_iteration():
         posts = []
         for user in self.produers:
-            posts += user.get_generation(self.generation)
+            posts += user.get_iteration(self.iteration)
         for user in self.consumers():
-            user.evaluate_generation()
-        generation += 1
+            user.evaluate_iteration(posts)
+        for user in self.producers:
+            user.mutate()
+        iteration += 1
         
