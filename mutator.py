@@ -1,6 +1,7 @@
 import nltk
 import random
 import numpy as np
+import scipy
 
 def mutateWeights(grammar):
     start = grammar._start
@@ -18,5 +19,12 @@ def mutateWeights(grammar):
     newGrammar = nltk.PCFG(start, otherProductions)
     return newGrammar
 
-
-    
+    list #this is the list of probabilities
+    lower = 0
+    upper = 1
+    current value
+    standarddeviationsayswhat = .2
+    trunk = scipy.stats.truncnorm.rvs((lower - current value)/standarddeviationsayswhat, (upper - current value)/standarddeviationsayswhat, loc=current value, scale = standarddeviationsayswhat)
+    sum = sum(list)
+    for v in list:
+        v = v/sum
