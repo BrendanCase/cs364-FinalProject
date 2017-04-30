@@ -29,7 +29,7 @@ Jackson Martin
         author:    The bot who generated it
         generation:     The round or generation the post was made in.
     """
-class Post():
+class Post:
     def __init__(self, string, author, authorID, iteration_index=None):
         self.text = string
         self.author = author
@@ -54,8 +54,7 @@ def addterminals(grammarString, termtype, termlist):
         rule_str += makerhs(terminal, prob)
     new_rule = rule_str[:-2] #get rid of last " |"
     old_rule = termtype+ ' -> \'*\' [1.0]'
-    grammarString = grammarString.replace(old_rule, new_rule)
-    #return nothing, the grammar string rep has been updated!
+    return grammarString.replace(old_rule, new_rule)
 
 def makerhs(t, p): #return a rhs form of production string: " t [p] | "
     return '\"' + t + '\"' + ' [' + str(p) + '] | '
@@ -73,7 +72,7 @@ class Grammar:
         leftHandSides = [prod._lhs for prod in self.grammar._productions]
         leftHandSide = random.choice(leftHandSides)
         productions = self.grammar.productions(lhs=leftHandSide)
-        otherProductions = [prod for prod in grammar.productions() if prod not in productions]
+        otherProductions = [prod for prod in self.grammar.productions() if prod not in productions]
         newProbs = np.random.dirichlet(np.ones(len(productions)),size=1)[0]
         for i, newProb in enumerate(newProbs):
             prod = productions[i]
@@ -84,14 +83,14 @@ class Grammar:
         newGrammar = nltk.PCFG(start, otherProductions)
         return Grammar(newGrammar)
 
-""" getPost
+    """ getPost
     takes a nltk.PCFG grammar
     creates a string by traversing the grammar's parse tree by selecting a child based on its probability
     and adding terminals (leaves) to the string
     traverses the trees with a pre-order style
     returns the string
     """
-    def getPost(self):
+    def get_post(self):
         Q = [self.grammar.start()]
         tok = []
         while len(Q) > 0:
@@ -131,12 +130,14 @@ class Grammar:
 
 class Producer:
 
-    def __init__(self, user, gramstring):
+    def __init__(self, user, gram):
         self.user = user
         self.userID = None
-        self.grammar_string = gramstring #the skeleton grammar string for this producer to start with
-        self.parent_grammar = Grammar(self.induce_grammar())
-        self.child_grammars = self.get_children()
+        if isinstance(gram, str):
+            self.parent_grammar = Grammar(self.induce_grammar(gram))
+        else: #gram is a PCFG already
+            self.parent_grammar = gram
+        self.get_children()
         self.grammars = self.get_grammars()
 
     """ inducegrammar
@@ -144,14 +145,13 @@ class Producer:
     handles errors making the grammar to be handled cleanly in the future
     (for now return a default pcfg)
     """
-    def inducegrammar(self):
+    def induce_grammar(self, gramString):
         try:
-            ret = nltk.grammar.pcfg.fromstring(self.grammar_string)
+            ret = nltk.grammar.PCFG.fromstring(gramString)
         except ValueError as e:
             print("There was something wrong with %s's grammar:" %self.user)
             print(e)
-            self.grammar_string = ''.join(open('default_grammar.pcfg'))
-            ret = nltk.grammar.PCFG.fromstring(self.grammar_string)
+            ret = nltk.data.load('default_grammar.pcfg')
         return ret
 
     def get_children(self, generation_size=2):
