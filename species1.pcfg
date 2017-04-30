@@ -1,0 +1,28 @@
+% start S
+# ###################
+# species1 is a sentence with a NP subject followed by a linking verb
+# and a adjectival subjective compliment
+# ###################
+S -> NP1 LV ADJ [1.0]
+# NP1 Expansions
+NP1 -> Nom [0.4] | DetGroup Nom [0.5] | PersPro [0.1]
+DetGroup -> Det Card [0.1] | Det Ord [0.2] | Det Card Ord [0.1] | Det Quant [0.1] | DetGroup Adj [0.2] | Det [0.3]
+Nom -> Noun [0.7] | Noun PP [0.3]
+Noun -> SingNoun [0.7] | SingPropNoun [0.3]
+PP -> Prep NP2 [1.0]
+# LV expansions
+LV -> '*' [1.0]
+# ADJ and PP expansions (the ADJ can be a PP)
+ADJ -> Prep NP2 [0.2] | Adj [0.8]
+NP2 -> PosPro [0.2] | DetGroup Nom [0.5] | Nom [0.3]
+# Terminals
+Det -> '*' [1.0]
+Card -> '*' [1.0]
+Ord -> '*' [1.0]
+Quant -> '*' [1.0]
+Adj -> '*' [1.0]
+SingNoun -> '*' [1.0]
+SingPropNoun -> '*' [1.0]
+Prep -> '*' [1.0]
+PersPro -> '*' [1.0]
+PosPro -> '*' [1.0]
