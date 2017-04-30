@@ -2,6 +2,7 @@ import nltk
 import random
 import re
 import numpy as np
+import scipy
 import datetime
 
 """ producer class
@@ -84,6 +85,49 @@ class Grammar:
             otherProductions.append(newProd)
         newGrammar = nltk.PCFG(start, otherProductions)
         return Grammar(newGrammar)
+        
+    def addNew(self, left, right, prob):
+        grammar = self.grammar
+        start = grammar._start
+        leftHandSides = [prod._lhs for prod in grammar._productions]
+        oldProductions = grammar.productions(lhs=left)
+        otherProductions = [prod for prod in grammar.productions() if prod not in oldProductions]
+        productions = []
+        sum = 1 - prob
+        productions.append(left, right, prob)
+        for p in oldProductions:
+            lhs = p._lhs
+            rhs = p._rhs
+            pro = p.prob()
+            newProd = nltk.ProbabilisticProduction(lhs,rhs,prob=pro * sum)    
+            productions.append(newProd)
+        otherProductions.append(productions)
+        return otherProductions
+        
+    def mutateWeight(self):
+        grammar = self.grammar
+        start = grammar._start
+        leftHandSides = [prod._lhs for prod in grammar._productions]
+        leftHandSide = random.choice(leftHandSides)
+        oldProductions = grammar.productions(lhs=leftHandSide)
+        otherProductions = [prod for prod in grammar.productions() if prod not in oldProductions]
+        productions = []
+        p1 = random.choice(productions)
+        oldProductions.remove(p1)
+        lower = 0
+        upper = 1
+        standarddeviationsayswhat = .2
+        newProb = scipy.stats.truncnorm.rvs((lower - p1.prob)/standarddeviationsayswhat, (upper - p1.prob)/standarddeviationsayswhat, loc=p1.prob, scale = standarddeviationsayswhat)
+        sum = sum([p.prob for p in oldProductions]) + newProb
+        productions.append(p1._lhs,p1._rhs, newProb/sum)
+        for p in oldProductions:
+            lhs = p._lhs
+            rhs = p._rhs
+            pro = p.prob()
+            newProd = nltk.ProbabilisticProduction(lhs,rhs,prob=pro/sum)    
+            productions.append(newProd)
+        otherProductions.append(productions)
+        return otherProductions
 
     """ getPost
     takes a nltk.PCFG grammar
