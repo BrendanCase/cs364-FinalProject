@@ -1,4 +1,5 @@
 import nltk
+import random as rand
 
 class LengthRule(metric.Metric):
     def __init__(self, second, first, zero):
