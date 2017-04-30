@@ -2,8 +2,14 @@ import nltk
 from nltk.corpus import brown
 from nltk.corpus import gutenberg
 from random import sample
-
-from producer.producer_class import Producer
+import random 
+import s1str
+import environment
+from producer_class import Producer
+import evaluator
+from length import LengthRule
+from apostrophe import ApostropheRule
+from closeword import WordRule
 
 Brown = brown.tagged_words(tagset='universal')
 Carroll = nltk.pos_tag(gutenberg.words('whitman-leaves.txt'))
@@ -54,11 +60,11 @@ def makeGString():
 def spawn_users(num):
     users = []
     for i in range(num):
-        name = "user_%d" % num
-        gstring = makeGString()
+        name = "user_%d" % i
+        gstring = s1str.getGString()
         producer = Producer(name, gstring)
-        gNums = [rand.randint(0,10) for i in range(5)]
-        bNums = [rand.randint(0,10) for i in range(5)]
+        gNums = [random.randint(0,10) for i in range(5)]
+        bNums = [random.randint(0,10) for i in range(5)]
         wordTypes = [Adjectives2, Pronouns, Nouns2, IntransitiveVerbs, Verbs2]
         gWords = []
         bWords = []
@@ -66,15 +72,21 @@ def spawn_users(num):
             gWords += sample(wtype, gNums[i])
             bWords += sample(wtype, bNums[i])
         wr = WordRule(gWords, bWords)
-        ar = ApostropheRule(random.Random(), random.Random(), random.Random())
-        lr = LengthRule(random.Random()*-1, random.Random(), random.Random())
-        evaluator = evaluator.Evaluator([wr, ar, lr])
-        users.append(environment.User(name, producer, True, evaluator, True))
+        ar = ApostropheRule(random.random(), random.random(), random.random())
+        lr = LengthRule(random.random()*-1, random.random(), random.random())
+        aEvaluator = evaluator.Evaluator([wr, ar, lr])
+        users.append(environment.User(name, producer, True, aEvaluator, True))
     return users
 
-ev = environment.Environment(spawn_users)
-
-for i in range(100):
-    ev.run_iteration
+#ev = environment.Environment(lambda: spawn_users(10), 'test.db')
+#print("setting up database")
+#ev.setup_db()
+#print("adding users to database")
+#ev.add_users_to_db()
+#for i in range(100):
+#    print("on iteration %d" % i)
+#    posts = ev.run_iteration
+#    print("adding iteration to database")
+#    ev.insert_posts(posts)
 
 

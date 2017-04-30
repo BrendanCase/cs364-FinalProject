@@ -1,8 +1,9 @@
-import Producer from producer_class
+from producer_class import Producer
 import evaluator
-import LengthRule from length
-import ApostropheRule from apostrophe
-import WordRule from closeword
+from length import LengthRule
+from apostrophe import ApostropheRule
+from closeword import WordRule
+import sqlite3
 
 
 class User():
@@ -14,26 +15,26 @@ class User():
         self.iterations = []
         self.iteration_size=iteration_size
         self.isProducer = isProducer
-        self.isEvaluator = isEvaluator
+        self.isConsumer = isEvaluator
 
     def get_iteration(self, iteration_index):
-        return self.producer.get_iteration(iteration_index, iteration_size)
+        return self.producer.get_iteration(iteration_index, self.iteration_size)
 
     def evaluate_iteration(self, iteration):
         for post in iteration:
             self.evaluator.evaluate(post.text)
 
-    def mutate():
+    def mutate(self):
         self.producer.mutate()
 
-class Environment(spawn, db_name):
-    def __init__(self):
-        self.db = sb.name
+class Environment:
+    def __init__(self, spawn, db_name):
+        self.db = db_name
         self.users = spawn()
         self.producers = self.get_producers()
         self.consumers = self.get_consumers()
-        self.generation = 0
-        self.generations = []
+        self.iteration = 0
+        self.iterations = []
     
     def setup_db(self):
         conn = sqlite3.connect(self.db)
@@ -65,25 +66,24 @@ class Environment(spawn, db_name):
     def get_consumers(self):
         return [user for user in self.users if user.isConsumer]
 
-    def run_iteration():
+    def run_iteration(self):
         posts = []
-        for user in self.produers:
+        for user in self.producers:
             posts += user.get_iteration(self.iteration)
-        for user in self.consumers():
+        for user in self.consumers:
             user.evaluate_iteration(posts)
         for user in self.producers:
             user.mutate()
-        iteration += 1
-        self.insert_posts(posts)
+        self.iteration += 1
+        return posts
         
 
     def insert_posts(self, posts):
-        pvals = [(p.authorID, p.author, str(p.timestamp), p.text,  p.score. p.upvotes,
-                  p.downvotes, p.iteration_index) for p in posts]
-        conn = sqllite3.connect(self.db)
+        pvals = [(p.authorID, p.author, str(p.timestamp), p.text,  p.score, p.upvotes, p.downvotes, p.iteration_index) for p in posts]
+        conn = sqlite3.connect(self.db)
         c=conn.cursor()
-        c.executemany('''INSERT INTO posts(poster_id, poster, time, score, upvotes, 
-                         downvotes, iteration) VALUES (?,?,?,?,?,?,?)''', pvals)
+        c.executemany('''INSERT INTO posts(poster_id, poster, time, post, score, upvotes, 
+                         downvotes, iteration) VALUES (?,?,?,?,?,?,?,?)''', pvals)
         conn.commit()
         conn.close()
     
