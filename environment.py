@@ -1,34 +1,20 @@
 import Producer from producer_class
+import evaluator
+import LengthRule from length
+import ApostropheRule from apostrophe
+import WordRule from closeword
 
-""" A post is a post object, containing information about a given textpost.
-    Attributes:
-        text:      A string contiang the text of the post
-        timestamp: A datetime object containg the time the post was generated
-        score:     The score of a given post
-        upvotes:   The number upvotes the post has recieved
-        downvotes: The number of downvotes a post has recieved
-        author:    The bot who generated it
-        generation:     The round or generation the post was made in.
-    """
-class Post():
-    def __init__(self, string, author, iteration_index=None):
-        self.text = string
-        self.author = author
-        self.iteration_index = iteration_index
-        self.timestamp = datetime.datetime.today()
-        self.score = 0
-        self.upvotes = 0
-        self.downvotes = 0
 
 class User():
-    def __init__(self, name, grammar, iteration_size=10):
-        self.producer = Producer()
-        self.evaluator = Evaluator()
+    def __init__(self, name, producer, isProducer, evaluator, isEvaluator, iteration_size=10):
+        self.producer = producer
+        self.evaluator = evaluator
         self.name = name
-        self.parent_grammar = grammar
-        self.child_grammars = self.get_children(grammar) 
+        self.dbID = None
         self.iterations = []
         self.iteration_size=iteration_size
+        self.isProducer = isProducer
+        self.isEvaluator = isEvaluator
 
     def get_iteration(self, iteration_index):
         return self.producer.get_iteration(iteration_index, iteration_size)
@@ -40,19 +26,44 @@ class User():
     def mutate():
         self.producer.mutate()
 
-class Environment():
+class Environment(spawn, db_name):
     def __init__(self):
-        self.users = spawn_users()
+        self.db = sb.name
+        self.users = spawn()
         self.producers = self.get_producers()
         self.consumers = self.get_consumers()
         self.generation = 0
         self.generations = []
+    
+    def setup_db(self):
+        conn = sqlite3.connect(self.db)
+        c = conn.cursor()
+        c.execute('''CREATE TABLE users 
+                            (user_id INTEGER PRIMARY KEY, name TEXT)''')
+        c.execute('''CREATE TABLE posts
+                            (post_id INTEGER PRIMARY KEY, poster_id INTEGER, 
+                             poster TEXT, time TEXT, post TEXT, score INTEGER,
+                             upvotes INTEGER, downvotes INTEGER, iteration INTEGER)''')
+        conn.commit()
+        conn.close()
+
+    def add_users_to_db(self):
+        conn = sqlite3.connect(self.db)
+        c = conn.cursor()
+        for user in self.users:
+            c.execute('INSERT INTO users(name) VALUES (?)', (user.name, ))
+            c.execute('SELECT user_id FROM users WHERE name = ?', (user.name, ))
+            uid = c.fetchone()[0]
+            user.dbID = uid
+            user.producer.userID = uid
+        conn.commit()
+        conn.close()
 
     def get_producers(self):
-        return [user for user in self.users if user.producer]
+        return [user for user in self.users if user.isProducer]
     
     def get_consumers(self):
-        return [user for user in self.users if user.consumer]
+        return [user for user in self.users if user.isConsumer]
 
     def run_iteration():
         posts = []
@@ -63,6 +74,25 @@ class Environment():
         for user in self.producers:
             user.mutate()
         iteration += 1
-
-    def log_generatio
+        self.insert_posts(posts)
         
+
+    def insert_posts(self, posts):
+        pvals = [(p.authorID, p.author, str(p.timestamp), p.text,  p.score. p.upvotes,
+                  p.downvotes, p.iteration_index) for p in posts]
+        conn = sqllite3.connect(self.db)
+        c=conn.cursor()
+        c.executemany('''INSERT INTO posts(poster_id, poster, time, score, upvotes, 
+                         downvotes, iteration) VALUES (?,?,?,?,?,?,?)''', pvals)
+        conn.commit()
+        conn.close()
+    
+    def get_id_for_user(self, username):
+        conn = sqlite3.connect(self.db)
+        c = conn.cursor()
+        uname = (username,)
+        result = c.execute('SELECT user_id from users where name = ?', uname)
+        conn.commit()
+        conn.close()
+        return result[0][0]
+
