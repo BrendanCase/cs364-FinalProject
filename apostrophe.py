@@ -1,4 +1,4 @@
-import nltk
+import random as rand
 
 class ApostropheRule(metric.Metric):
     def __init__(self, second, first, zero):
