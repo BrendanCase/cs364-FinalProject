@@ -6,7 +6,7 @@
 # ###################
 S -> NP1 VbePres ADVTPPres [0.5] | NP1 VbePast ADVTPPast [0.5]
 # NP1 EXPANSIONS #
-NP1 -> Nom [0.3] | DetGroup Nom [0.3] | PersPro [0.2] | PosPro SingNoun Pos Nom [0.2]
+NP1 -> Nom [0.3] | DetGroup Nom [0.3] | PersPro [0.2] | PosPro SingNoun Pos SingNoun [0.1] | PosPro SingNoun Pos SingNoun PP [0.1]
 DetGroup -> Det Ord [0.3] | DetGroup Adj [0.3] | Det [0.4]
 Nom -> Noun [0.7] | Noun PP [0.3]
 Noun -> SingNoun [0.9] | SingPropNoun [0.1]
