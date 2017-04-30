@@ -1,5 +1,5 @@
-import nltk
 import random as rand
+import metric
 
 class LengthRule(metric.Metric):
     def __init__(self, second, first, zero):
@@ -7,7 +7,7 @@ class LengthRule(metric.Metric):
         self.first = first
         self.zero = zero
     
-    def eval(self, string):
+    def evaluate(self, string):
         return self.second * (len(string) ** 2) + self.first * len(string) + self.zero
     
     def mutate(self, bull, change):

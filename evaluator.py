@@ -9,10 +9,10 @@ class Evaluator():
     def evaluate(self, str):
         v = 0 #v is the value gained by the Evaluator by reading this meme
         for m in self.metric: #m is one of the members of metric
-            v += m.eval(str)
-        if v < minusThresh:
+            v += m.evaluate(str)
+        if v < self.minusThresh:
             return -1
-        if v > plusThresh:
+        if v > self.plusThresh:
             return 1
         return 0
         

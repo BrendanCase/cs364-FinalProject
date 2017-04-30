@@ -1,4 +1,5 @@
-import nltk
+import metric
+from nltk.corpus import wordnet as wn
 
 CHANCE = .2
 """ WordRule
@@ -21,14 +22,19 @@ class WordRule(metric.Metric):
     def getLCHDepth(self, syns1, syns2):
         """ gets the depth of the lowest common hypernym of two elements
             in a synset"""
-        lch = csyn.lowest_common_hypernyms(syns2)
+        lch = syns1.lowest_common_hypernyms(syns2)
+        if len(lch) == 0:
+            return 0
         minDepth = wn.synset(lch[0].name()).min_depth()
+        return minDepth
 
     def getSimilarity(self, word1, word2):
         """ For two words, finds the two closest definitions and return the depth"""
         w1syns = wn.synsets(word1)
         w2syns = wn.synsets(word2)
-        depths = [self.getLCHDepth(w1syn, w2syn) for w1syn in w1syns for w2syn in w2syns])
+        if 0 in (len(w1syns), len(w2syns)):
+            return 0
+        depths = [self.getLCHDepth(w1syn, w2syn) for w1syn in w1syns for w2syn in w2syns]
         return max(depths)
         
     def getRating(self, word, wordList):
