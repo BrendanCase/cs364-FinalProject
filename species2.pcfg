@@ -1,0 +1,37 @@
+% start S
+# ###################
+# species2 is a sentence with a singular NP subject (including a special possession feature)
+# followed by a singular verb of being and an adverbial of time or place
+# ex: my boss's duck is at the library
+# ###################
+S -> NP1 VbePres ADVTPPres [0.5] | NP1 VbePast ADVTPPast [0.5]
+# NP1 EXPANSIONS #
+NP1 -> Nom [0.3] | DetGroup Nom [0.3] | PersPro [0.2] | PosPro SingNoun Pos Nom [0.2]
+DetGroup -> Det Ord [0.3] | DetGroup Adj [0.3] | Det [0.4]
+Nom -> Noun [0.7] | Noun PP [0.3]
+Noun -> SingNoun [0.9] | SingPropNoun [0.1]
+PP -> Prep NP2 [1.0]
+# Vbe EXPANSIONS #
+VbePres -> 'is' [0.7] | VingPres Adj [0.3]
+VbePast -> 'was' [0.7] | VingPast Adj [0.3]
+# ADVTP EXPANSIONS #
+ADVTPPres -> AdvPlace ADVTPres [0.3] | ADVTPres [0.4] | PP [0.3]
+ADVTPres -> AdvTimePres [0.25] | AdvTimePres PP [0.25] | PP [0.25] | PP AdvTimePres [0.25]
+ADVTPPast -> AdvPlace ADVTPast [0.3] | ADVTPast [0.4] | PP [0.3]
+ADVTPast -> AdvTimePast [0.25] | AdvTimePast PP [0.25] | PP [0.25] | PP AdvTimePast [0.25]
+NP2 -> DetGroup Nom [0.6] | Nom [0.1] | PosPro SingNoun Pos Nom [0.3]
+# TERMINALS #
+PersPro -> 'he' [0.3] | 'she' [0.3] | 'it' [0.4]
+PosPro -> 'my' [0.2] | 'his' [0.1] | 'her' [0.1] | 'their' [0.25] | 'its' [0.15] | 'your' [0.2]
+Pos -> "'s" [1.0]
+VingPres -> 'is being' [1.0]
+VingPast -> 'was being' [1.0]
+Ord -> '*' [1.0]
+Det -> '*' [1.0]
+Adj -> '*' [1.0]
+SingNoun -> '*' [1.0]
+SingPropNoun -> '*' [1.0]
+Prep -> '*' [1.0]
+AdvPlace -> '*' [1.0]
+AdvTimePres -> '*' [1.0]
+AdvTimePast -> '*' [1.0]

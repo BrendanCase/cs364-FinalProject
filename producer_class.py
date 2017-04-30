@@ -2,6 +2,7 @@ import nltk
 import random
 import re
 import numpy as np
+import scipy
 import datetime
 
 """ producer class
@@ -85,14 +86,14 @@ class Grammar:
         newGrammar = nltk.PCFG(start, otherProductions)
         return Grammar(newGrammar)
         
-    def addNew(self, left, right, probability):
+    def addNew(self, left, right, prob):
         grammar = self.grammar
         start = grammar._start
         leftHandSides = [prod._lhs for prod in grammar._productions]
         oldProductions = grammar.productions(lhs=left)
-        otherProductions = [prod for prod in grammar.productions() if prod not in productions] 
+        otherProductions = [prod for prod in grammar.productions() if prod not in oldProductions]
         productions = []
-        sum = 1 - probability
+        sum = 1 - prob
         productions.append(left, right, prob)
         for p in oldProductions:
             lhs = p._lhs
@@ -106,10 +107,10 @@ class Grammar:
     def mutateWeight(self):
         grammar = self.grammar
         start = grammar._start
-        leftHandSides = [prod._lhs for prod in grammar._productions]o
+        leftHandSides = [prod._lhs for prod in grammar._productions]
         leftHandSide = random.choice(leftHandSides)
         oldProductions = grammar.productions(lhs=leftHandSide)
-        otherProductions = [prod for prod in grammar.productions() if prod not in productions] 
+        otherProductions = [prod for prod in grammar.productions() if prod not in oldProductions]
         productions = []
         p1 = random.choice(productions)
         oldProductions.remove(p1)
