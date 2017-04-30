@@ -21,7 +21,12 @@ class User():
 
     def evaluate_iteration(self, iteration):
         for post in iteration:
-            self.evaluator.evaluate(post.text)
+            result = self.evaluator.evaluate(post.text)
+            if result > 0:
+                post.upvotes += 1
+            if result < 0:
+                post.downvotes += 1
+            score += result
 
     def mutate():
         self.producer.mutate()
