@@ -1,6 +1,8 @@
 import nltk
 import random
 import re
+import numpy as np
+import datetime
 
 """ producer class
 A producer is...
@@ -122,7 +124,7 @@ class Grammar:
     def make_post(self, user, uid, iteration):
         text = self.get_post()
         newPost =  Post(text, user, uid, iteration)
-        self.posts = newPost
+        self.posts.append(newPost)
         return newPost
 
     def get_score(self):
@@ -137,7 +139,7 @@ class Producer:
             self.parent_grammar = Grammar(self.induce_grammar(gram))
         else: #gram is a PCFG already
             self.parent_grammar = gram
-        self.get_children()
+        self.child_grammars = self.get_children()
         self.grammars = self.get_grammars()
 
     """ inducegrammar
@@ -158,7 +160,7 @@ class Producer:
         children = []
         for i in range(generation_size):
             children.append(self.parent_grammar.mutate())
-        self.child_grammars = children
+        return children
 
     def get_grammars(self):
         return [self.parent_grammar] + self.child_grammars
@@ -171,10 +173,10 @@ class Producer:
         return current_iteration
 
     def mutate(self):
-        best_grammar = max(self.grammars, lambda x: x.get_score())
+        best_grammar = max(self.grammars, key=lambda x: x.get_score())
         self.parent_grammar = best_grammar
-        self.child_grammars = self.get_children
-        self.grammars = self.get_grammars
+        self.child_grammars = self.get_children()
+        self.grammars = self.get_grammars()
 
 
 
