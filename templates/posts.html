@@ -1,0 +1,9 @@
+<!doctype html>
+{% from 'macros.html' import post %} 
+<head>
+    <link rel="stylesheet", href="{{ stylesheet }}">
+    <title>Posts</title>
+</head>
+{% for p in posts %}
+{{post(p['post_id'], p['poster'], p['text'], p['time'], p['score'], p['upvotes'], p['downvotes'], p['iteration'])}}
+{% endfor %}

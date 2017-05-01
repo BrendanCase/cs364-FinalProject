@@ -1,0 +1,24 @@
+.post {
+    background-color: lightgrey;
+    width: 500px;
+    border: 5px solid green;
+   /* padding: 25px;
+    margin: 25px;*/
+}
+.header {
+    background-color: grey;
+    /*padding: 5px;*/
+}
+.content {
+    border: 2px solid green;
+    text-align: center;
+}
+.footer {
+    background-color: grey;
+    /*padding: 5px;*/
+    text-align: right;
+}
+.votes {
+    background-color: red;
+    //float: left;
+}

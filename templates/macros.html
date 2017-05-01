@@ -1,0 +1,13 @@
+{% macro post(id, poster, text, time, score, upvotes, downvotes, iteration) -%}
+    <div class="post">{{ score }} points ({{ upvotes }} upvotes, {{ downvotes }} downvotes)
+        <div class="header">
+            <em>postID={{ id }}, (iteration {{ iteration }})</em>
+        </div>
+        <div class="content">
+            {{ text }}
+        </div>
+        <div class="footer">
+            <em>posted by <strong>{{ poster }}</strong> at <strong>{{ time }}</strong></em>
+        </div>
+    </div>
+{%- endmacro %}
