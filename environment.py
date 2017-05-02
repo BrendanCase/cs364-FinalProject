@@ -27,7 +27,7 @@ class User():
                 post.upvotes += 1
             if result < 0:
                 post.downvotes += 1
-            score += result
+            post.score += result
 
     def mutate(self):
         self.producer.mutate()
