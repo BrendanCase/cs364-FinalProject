@@ -129,6 +129,42 @@ class Grammar:
         otherProductions.append(productions)
         return otherProductions
 
+    """ merge
+    takes a punctuation, conjunction and second grammar to act as the second
+    dependent/independent clause or phrase and modifies the current grammar to include this
+    more complex compound sentence
+    Currently enforces no sort of subject agreement between the two terminal sets
+    """
+    def merge(self, punct, conjunction, grammar2):
+        #first go through each of the nonterminals in grammar2 and make sure they do not overlap
+        new_prods = []
+        for p in grammar2.productions():
+            lhs = nltk.Nonterminal(str(p.lhs()) + '2')
+            rhs = []
+            for sym in p.rhs():
+                if isinstance(sym, nltk.Nonterminal):
+                    rhs.append(nltk.Nonterminal(str(sym) + '2'))
+                else:
+                    rhs.append(sym)
+            new_prods.append(nltk.ProbabilisticProduction(lhs, rhs, prob=p.prob()))
+        # then change the start rule of this grammar
+        start_prods = self.grammar.productions(self.grammar.start())
+        new_starts = [nltk.ProbabilisticProduction(nltk.Nonterminal(str(p.lhs()) + '1'),
+                                                   [nltk.Nonterminal(str(sym)) for sym in p.rhs()],
+                                                   prob=p.prob())
+                      for p in start_prods]
+        new_prods += (new_starts + [p for p in self.grammar.productions() if p not in start_prods])
+        # now make the head to combine the two production trees
+        CC = nltk.Nonterminal(punct + ' ' + conjunction)
+        new_prods.append(nltk.ProbabilisticProduction(CC, [punct + ' ' + conjunction], prob=1.0))
+        P1 = nltk.Nonterminal(str(self.grammar.start()) + '1')
+        P2 = nltk.Nonterminal(str(grammar2.start()) + '2')
+        S = nltk.Nonterminal('S')
+        head = nltk.ProbabilisticProduction(S, [P1, CC, P2], prob=1.0)
+        new_prods.append(head)
+        self.grammar = nltk.PCFG(S, new_prods)
+
+
     """ getPost
     takes a nltk.PCFG grammar
     creates a string by traversing the grammar's parse tree by selecting a child based on its probability

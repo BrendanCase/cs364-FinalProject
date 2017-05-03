@@ -1,0 +1,31 @@
+% start S
+# ###################
+# species4 is sentence of any tense with a noun phrase subject and a intransitive verb phrase
+# also allows for a prepositional phrase before the subject phrase
+# ex: my friend disappeared in the shop
+# ###################
+S -> NP1 VintP [0.8] | PP NP1 VintP [0.2]
+# NP1 EXPANSIONS #
+NP1 -> Nom [0.3] | DetGroup Nom [0.3] | SubPersPro [0.2] | PosPro SingNoun Pos SingNoun [0.1] | PosPro SingNoun Pos SingNoun PP [0.1]
+DetGroup -> Det Ord [0.3] | DetGroup Adj [0.3] | Det [0.4]
+Nom -> Noun [0.7] | Noun PP [0.3]
+Noun -> SingNoun [0.9] | SingPropNoun [0.1]
+PP -> Prep NP2 [1.0]
+NP2 -> DetGroup Nom [0.5] | Nom [0.1] | PosPro SingNoun Pos Nom [0.2] | CompPersPro [0.2]
+# VintP EXPANSIONS #
+VintP -> VintPast [0.2] | VintPres [0.2] | VintFut [0.2] | VintP PP [0.2] | VintP Adverb PP [0.1] | VintP Adverb [0.1]
+# TERMINALS #
+SubPersPro -> 'he' [0.3] | 'she' [0.3] | 'it' [0.4]
+CompPersPro -> 'him' [0.2] | 'her' [0.2] | 'it' [0.2] | 'me' [0.2] | 'them' [0.2]
+PosPro -> 'my' [0.2] | 'his' [0.1] | 'her' [0.1] | 'their' [0.25] | 'its' [0.15] | 'your' [0.2]
+Pos -> "'s" [1.0]
+Prep -> 'on' [0.2] | 'for' [0.1] | 'in' [0.2] | 'from' [0.1] | 'by' [0.2] | 'with' [0.2]
+Ord -> '*' [1.0]
+Det -> '*' [1.0]
+Adj -> '*' [1.0]
+SingNoun -> '*' [1.0]
+SingPropNoun -> '*' [1.0]
+VintPast -> '*' [1.0]
+VintPres -> '*' [1.0]
+VintFut -> '*' [1.0]
+Adverb -> '*' [1.0]
