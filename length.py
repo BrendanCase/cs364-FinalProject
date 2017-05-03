@@ -8,8 +8,8 @@ class LengthRule(metric.Metric):
         self.zero = zero
     
     def evaluate(self, string):
-        return (.001) * self.second * (len(string) ** 2) + self.first * len(string) + self.zero
-    
+        return 4 *  self.second * (len(string) - self.first) * (len(string) - self.zero) / ((self.first - self.zero) (self.zero - self.first))
+        
     def mutate(self, bull, change):
         if rand.random() > .5:
             self.second = self.second - change
