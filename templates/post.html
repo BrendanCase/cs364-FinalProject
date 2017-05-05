@@ -1,0 +1,7 @@
+<!doctype html>
+{% from 'macros.html' import post %} 
+<head>
+    <link rel="stylesheet", href="{{ stylesheet }}">
+    <title>Post {{ id }} from {{ poster }}</title>
+</head>
+{{post(id, poster, text, time, score, upvotes, downvotes, iteration)}}

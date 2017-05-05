@@ -6,10 +6,11 @@ from closeword import WordRule
 import sqlite3
 
 
-class User():
+class User:
     def __init__(self, name, producer, isProducer, evaluator, isEvaluator, iteration_size=10):
         self.producer = producer
         self.evaluator = evaluator
+        self.buddies = [] # list of other users, which may inspire this user's grammars.....
         self.name = name
         self.dbID = None
         self.iterations = []
@@ -61,7 +62,8 @@ class Environment:
             c.execute('SELECT user_id FROM users WHERE name = ?', (user.name, ))
             uid = c.fetchone()[0]
             user.dbID = uid
-            user.producer.userID = uid
+            if user.isProducer:
+                user.producer.userID = uid
         conn.commit()
         conn.close()
 
