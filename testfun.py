@@ -3,36 +3,17 @@ from nltk.corpus import brown
 from nltk.corpus import gutenberg
 from random import sample
 import random 
+import species1
 import s1str
 import s2str
+import s3str
+import s4str
 import environment
 from producer_class import Producer
 import evaluator
 from length import LengthRule
 from apostrophe import ApostropheRule
 from closeword import WordRule
-
-Brown = brown.tagged_words(tagset='universal')
-Carroll = nltk.pos_tag(gutenberg.words('whitman-leaves.txt'))
-
-#Adjectives1 = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'ADJ'])
-Adjectives2 = set(
-    [word for (word, tag) in Carroll
-     if tag == 'JJ' and len(word) > 3]
-)
-Pronouns = set([word for (word, tag) in Brown if tag == 'PRON'])
-Determiners = set([word for (word, tag) in Brown if tag == 'DET'])
-#Nouns1 = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'NOUN'])
-Nouns2 = set(
-    [word for (word, tag) in Carroll
-     if tag == 'NN' and len(word) > 3]
-)
-IntransitiveVerbs = set([w.strip('\n') for w in open('intransitives.txt')])
-#Verbs1 = set([word for (word, tag) in brown.tagged_words(tagset='universal') if tag == 'VERB'])
-Verbs2 = set(
-    [word for (word, tag) in Carroll
-     if tag == 'VB' and len(word) > 3]
-)
 
 def makeGString():
     test = Producer('/u/_junebug_', """
@@ -58,11 +39,13 @@ def makeGString():
     test.addTerminals('TV', sample(Verbs2, 50))
     return test
 
-def make_rand_producer(name):
-    string_makers = [s1str.getGString(), s2str.getGString()]
-    getter = random.choice(string_makers)
-    gstring = s1str.getGString()
-    producer = Producer(name, gstring)
+def make_rand_producer(name, user, i):
+    string_makers = [species1.getGString, s2str.getGString, s3str.getGString, s4str.getGString]
+    #getter = random.choice(string_makers)
+    print(i%4)
+    getter = string_makers[i%4]
+    gstring, wordlist= getter()
+    producer = Producer(user, gstring, wordlist)
     return producer
 
 def make_rand_evaluator():
@@ -86,8 +69,11 @@ def spawn_users(num, num2):
     users = []
     for i in range(num):
         name = "user_%d" % i
-        producer = make_rand_producer(name)
+        user = environment.User(name, None, True, None, True)
+        producer = make_rand_producer(name, user, i)
+        user.producer = producer
         eva = make_rand_evaluator()
+        user.evaluator = eva
         #gstring = s1str.getGString()
         #producer = Producer(name, gstring)
         #gNums = [random.randint(0,10) for i in range(5)]
@@ -102,7 +88,8 @@ def spawn_users(num, num2):
         #ar = ApostropheRule(random.random(), random.random(), random.random())
         #lr = LengthRule(random.random()*-1, random.random(), random.random())
         #aEvaluator = evaluator.Evaluator([wr, ar, lr])
-        users.append(environment.User(name, producer, True, eva, True))
+        #users.append(environment.User(name, producer, True, eva, True))
+        users.append(user)
     for i in range(num2):
         name = "eva_%d" % i
         producer = None
