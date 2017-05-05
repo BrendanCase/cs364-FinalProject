@@ -5,7 +5,6 @@ from apostrophe import ApostropheRule
 from closeword import WordRule
 import sqlite3
 
-
 class User:
     def __init__(self, name, producer, isProducer, evaluator, isEvaluator, iteration_size=10):
         self.producer = producer
@@ -30,7 +29,7 @@ class User:
             if result > 0:
                 post.upvotes += 1
                 author = post.authorID
-                if author not in self.buddies
+                if author not in self.buddies:
                     if author in self.potBuds.keys:
                         self.potBuds[author] += 1
                     else:
