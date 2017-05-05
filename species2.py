@@ -6,7 +6,7 @@ on species2.pcfg and making some posts
 
 import nltk
 from nltk.corpus import gutenberg
-from random import sample
+from random import choice
 from producer_class import addterminals
 from producer_class import Producer
 
@@ -30,8 +30,13 @@ def main():
 
     prod = Producer('/u/_junebug_', skeleton_gram_str)
 
-    for i in range(10):
-        print(prod.parent_grammar.get_post())
+    print(prod.parent_grammar.grammar)
+
+    p = choice(prod.parent_grammar.grammar.productions())
+    prod.parent_grammar.add_new([nltk.ProbabilisticProduction(p.lhs(), ['hii'], prob=0.3)])
+
+    print(prod.parent_grammar.grammar)
+
 
 if __name__ == '__main__':
     main()

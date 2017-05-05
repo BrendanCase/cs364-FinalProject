@@ -13,7 +13,6 @@ def getGString():
         'Adj' : ['green', 'blue', 'winning', 'cheerful', 'elated'],
         'SingNoun' : ['duck', 'ant', 'egg', 'window', 'cereal', 'AI project'],
         'SingPropNoun' : ['Jack', 'Jill', 'Fred', 'George'],
-        'Prep' : ['on', 'for', 'from', 'by', 'with'],
         'AdvPlace' : ['here', 'there', 'everywhere'],
         'AdvTimePres' : ['today', 'Friday', 'this week', 'sometime'],
         'AdvTimePast' : ['yesterday', 'last Wednesday', 'last month']

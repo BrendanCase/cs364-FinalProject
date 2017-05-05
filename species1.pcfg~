@@ -1,0 +1,19 @@
+
+% start S
+# ###################
+# Grammar Productions
+# ###################
+S -> NP LV ADJ [1.0]
+NP -> Nom [0.6] | Det Nom [0.3] | Pronoun [0.1]
+Det -> Det Card [0.2] | Det Ord [0.2] | Det Quant [0.1] | Det Adj [0.2] | DT [0.3]
+DT -> PDT DT [0.3] | DT [0.7]
+PDT -> '*' [1.0]
+DT -> '*' [1.0]
+Card -> '*' [1.0]
+Ord -> '*' [1.0]
+Quant -> '*' [1.0]
+Adj -> '*' [1.0]
+Nom -> Noun [0.7] | Noun PP [0.3]
+Noun -> NN [0.7] | NNP [0.3]
+NN -> '*' [1.0]
+NNP -> '*' [1.0]

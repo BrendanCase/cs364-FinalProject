@@ -15,9 +15,7 @@ def main():
     skeleton_gram_string = ''.join(open('species1.pcfg'))
 
     skeleton_gram_string = addterminals(skeleton_gram_string, 'Det', ['the', 'a', 'this', 'all' 'each', 'another', 'any'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'Card', ['one', 'four', 'twenty'])
     skeleton_gram_string = addterminals(skeleton_gram_string, 'Ord', ['first', 'last', 'second', 'next', 'other'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'Quant', ['many', 'few'])
     skeleton_gram_string = addterminals(skeleton_gram_string, 'Adj', sample(set(
         [word for (word, tag) in walt
         if tag == 'JJ' and len(word) > 3]
