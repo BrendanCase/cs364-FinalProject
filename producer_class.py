@@ -162,7 +162,7 @@ class Grammar:
         S = nltk.Nonterminal('S')
         head = nltk.ProbabilisticProduction(S, [P1, CC, P2], prob=1.0)
         new_prods.append(head)
-        return S, new_prods
+        self.grammar = nltk.PCFG(S, new_prods)
 
     def _getsep(self):
         pure_conj = ['and', 'but', 'for', 'so', 'yet']
