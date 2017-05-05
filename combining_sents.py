@@ -5,9 +5,6 @@ joined together to make a more interesting sentence. This opens up for more
 diverse and meaningful crossover mutations
 '''
 
-import nltk
-from nltk.corpus import gutenberg
-from random import sample
 from producer_class import addterminals
 from producer_class import Producer
 

@@ -1,8 +1,7 @@
 import nltk
 import random
-import re
+import math
 import numpy as np
-import scipy
 import datetime
 
 """ producer class
@@ -65,75 +64,58 @@ def makerhs(t, p): #return a rhs form of production string: " t [p] | "
 
 class Grammar:
     
-    def __init__(self, grammar):
+    def __init__(self, grammar, user):
+        self.user = user #the user which owns this grammar
         self.grammar = grammar
         self.posts = []
 
     def mutate(self):
-        #temporary mutation function
-        start = self.grammar._start
-        leftHandSides = [prod._lhs for prod in self.grammar._productions]
-        leftHandSide = random.choice(leftHandSides)
-        productions = self.grammar.productions(lhs=leftHandSide)
-        otherProductions = [prod for prod in self.grammar.productions() if prod not in productions]
-        newProbs = np.random.dirichlet(np.ones(len(productions)),size=1)[0]
-        for i, newProb in enumerate(newProbs):
-            prod = productions[i]
-            lhs = prod._lhs
-            rhs = prod._rhs
-            newProd = nltk.ProbabilisticProduction(lhs,rhs,prob=newProb)
-            otherProductions.append(newProd)
-        newGrammar = nltk.PCFG(start, otherProductions)
-        return Grammar(newGrammar)
+        r = random.random()
+        self.mutate_weights()
+        # for user in self.user.buddies:
+        #     bud_gram = user.producer.parent_grammar
+        #     if r < 0.1: # there's a %10 chance of grabbing a bud's terminal
+        #         candidate_lhs = [p.lhs() for p in self.grammar.productions() if not isinstance(p.rhs(), nltk.Nonterminal)]
+        #         candidate_prods = [p for p in bud_gram.productions() if p.lhs() in candidate_lhs]
+
+        return Grammar(self.grammar)
         
-    def addNew(self, left, right, prob):
-        grammar = self.grammar
-        start = grammar._start
-        leftHandSides = [prod._lhs for prod in grammar._productions]
-        oldProductions = grammar.productions(lhs=left)
-        otherProductions = [prod for prod in grammar.productions() if prod not in oldProductions]
-        productions = []
-        sum = 1 - prob
-        productions.append(left, right, prob)
-        for p in oldProductions:
-            lhs = p._lhs
-            rhs = p._rhs
-            pro = p.prob()
-            newProd = nltk.ProbabilisticProduction(lhs,rhs,prob=pro * sum)    
-            productions.append(newProd)
-        otherProductions.append(productions)
-        return otherProductions
+    def add_new(self, prods):
+        gram = self.grammar
+        new_prods = []
+        for prod in prods: # these are the productions we are adding
+            effected_prods = gram.productions(prod.lhs())
+            new_prods.extend([p for p in gram.productions() if p not in effected_prods])
+            fix = prod.prob()/len(effected_prods)
+            new_prods.append(prod)
+            for p in effected_prods:
+                new_prods.append(nltk.ProbabilisticProduction(p.lhs(), p.rhs(), prob=p.prob() - fix))
+        self.grammar = nltk.PCFG(gram.start(), new_prods)
         
-    def mutateWeight(self):
-        grammar = self.grammar
-        start = grammar._start
-        leftHandSides = [prod._lhs for prod in grammar._productions]
-        leftHandSide = random.choice(leftHandSides)
-        oldProductions = grammar.productions(lhs=leftHandSide)
-        otherProductions = [prod for prod in grammar.productions() if prod not in oldProductions]
-        productions = []
-        p1 = random.choice(productions)
-        oldProductions.remove(p1)
-        lower = 0
-        upper = 1
-        standarddeviationsayswhat = .2
-        newProb = scipy.stats.truncnorm.rvs((lower - p1.prob)/standarddeviationsayswhat, (upper - p1.prob)/standarddeviationsayswhat, loc=p1.prob, scale = standarddeviationsayswhat)
-        sum = sum([p.prob for p in oldProductions]) + newProb
-        productions.append(p1._lhs,p1._rhs, newProb/sum)
-        for p in oldProductions:
-            lhs = p._lhs
-            rhs = p._rhs
-            pro = p.prob()
-            newProd = nltk.ProbabilisticProduction(lhs,rhs,prob=pro/sum)    
-            productions.append(newProd)
-        otherProductions.append(productions)
-        return otherProductions
+    def mutate_weights(self):
+        gram = self.grammar
+        new_prods = gram.productions()
+        for prod in gram.productions():
+            if random.random() <= 0.1: #this prod gettin' mutated
+                prods = gram.productions(prod.lhs()) #must change the weights of the productions which share prod's lhs
+                if len(prods) == 1:
+                    continue
+                new_prods = [p for p in new_prods if p not in prods] # temporarily remove the prods we are changing
+                change = random.gauss(0, .01/(math.sqrt(2)/math.pi))
+                fix = change/(len(prods) - 1)
+                for p in prods:
+                    if p == prod:
+                        new_prods.append(nltk.ProbabilisticProduction(p.lhs(), p.rhs(), prob=(p.prob() + change)))
+                    else:
+                        new_prods.append(nltk.ProbabilisticProduction(p.lhs(), p.rhs(), prob=(p.prob() - fix)))
+        self.grammar = nltk.PCFG(gram.start(), new_prods)
 
     """ merge
     takes a punctuation, conjunction and second grammar to act as the second
     dependent/independent clause or phrase and modifies the current grammar to include this
     more complex compound sentence
     Currently enforces no sort of subject agreement between the two terminal sets
+    Returns a tuple of the new start state and new productions
     """
     def merge(self, punct, conjunction, grammar2):
         #first go through each of the nonterminals in grammar2 and make sure they do not overlap
@@ -162,7 +144,7 @@ class Grammar:
         S = nltk.Nonterminal('S')
         head = nltk.ProbabilisticProduction(S, [P1, CC, P2], prob=1.0)
         new_prods.append(head)
-        self.grammar = nltk.PCFG(S, new_prods)
+        return S, new_prods
 
 
     """ getPost
