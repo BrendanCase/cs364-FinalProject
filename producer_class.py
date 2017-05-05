@@ -3,23 +3,17 @@ import random
 import math
 import numpy as np
 import datetime
+from nltk.corpus import gutenberg
 
 """ producer class
-A producer is...
-
-******
-Public Methods:
-
-induceGrammar
-getPost
-addTerminals
-******
 
 Authors:
 Brendan Case
 Joe Martin
 Jackson Martin
 """
+
+WordBank = nltk.pos_tag(gutenberg.words('whitman-leaves.txt'))
 
 """ A post is a post object, containing information about a given textpost.
     Attributes:
@@ -70,15 +64,39 @@ class Grammar:
         self.posts = []
 
     def mutate(self):
-        r = random.random()
-        self.mutate_weights()
-        # for user in self.user.buddies:
-        #     bud_gram = user.producer.parent_grammar
-        #     if r < 0.1: # there's a %10 chance of grabbing a bud's terminal
-        #         candidate_lhs = [p.lhs() for p in self.grammar.productions() if not isinstance(p.rhs(), nltk.Nonterminal)]
-        #         candidate_prods = [p for p in bud_gram.productions() if p.lhs() in candidate_lhs]
+        self.mutate_weights() #MUTATE TYPE 1
 
-        return Grammar(self.grammar)
+        new_prods = []
+        for user in self.user.buddies:
+            bud_prod = user.producer
+            if random.random() <= 0.05: # there's a %5 chance of grabbing a bud's terminal
+                done = False
+                word_type = None
+                while not done: # make sure you have a place to add this terminal
+                    word_type = random.choice(bud_prod.wordlist.keys())
+                    if word_type in self.user.producer.wordlist.keys():
+                        done = True
+                word = random.choice(bud_prod.wordlist[word_type])
+                lhs = [p.lhs() for p in self.grammar.productions() if str(p.lhs()) in word_type][0]
+                new_prods.append(nltk.ProbabilisticProduction(lhs, [word], prob=1/len(self.user.producer.wordlist[word_type])))
+        if random.random() <= 0.05: # %5 chance to grab some random new noun or adjective
+            if random.random() <= 0.5:
+                word = random.choice(set([word for (word, tag) in WordBank if tag == 'NN' and len(word) > 3]))
+                word_type = 'SingNoun'
+            else:
+                word = random.choice(set([word for (word, tag) in WordBank if tag == 'JJ' and len(word) > 3]))
+                word_type = 'Adj'
+            lhs = [p.lhs() for p in self.grammar.productions() if str(p.lhs()) in word_type][0]
+            new_prods.append(nltk.ProbabilisticProduction(lhs, [word], prob=1/len(self.user.producer.wordlist[word_type])))
+        if len(new_prods) > 0:
+            self.add_new(new_prods) # MUTATE TYPE 2
+
+        if random.random() <= 0.01: # %1 chance to breed with a bud grammar
+            bud = random.choice(self.user.buddies)
+            sep = self._getsep()
+            self.merge(sep, bud) # MUTATE TYPE 3
+
+        return Grammar(self.grammar, self.user)
         
     def add_new(self, prods):
         gram = self.grammar
@@ -117,7 +135,7 @@ class Grammar:
     Currently enforces no sort of subject agreement between the two terminal sets
     Returns a tuple of the new start state and new productions
     """
-    def merge(self, punct, conjunction, grammar2):
+    def merge(self, conjunction, grammar2):
         #first go through each of the nonterminals in grammar2 and make sure they do not overlap
         new_prods = []
         for p in grammar2.productions():
@@ -137,15 +155,25 @@ class Grammar:
                       for p in start_prods]
         new_prods += (new_starts + [p for p in self.grammar.productions() if p not in start_prods])
         # now make the head to combine the two production trees
-        CC = nltk.Nonterminal(punct + ' ' + conjunction)
-        new_prods.append(nltk.ProbabilisticProduction(CC, [punct + ' ' + conjunction], prob=1.0))
+        CC = nltk.Nonterminal(conjunction)
+        new_prods.append(nltk.ProbabilisticProduction(CC, [conjunction], prob=1.0))
         P1 = nltk.Nonterminal(str(self.grammar.start()) + '1')
         P2 = nltk.Nonterminal(str(grammar2.start()) + '2')
         S = nltk.Nonterminal('S')
         head = nltk.ProbabilisticProduction(S, [P1, CC, P2], prob=1.0)
         new_prods.append(head)
-        return S, new_prods
+        self.grammar = nltk.PCFG(S, new_prods)
 
+    def _getsep(self):
+        pure_conj = ['and', 'but', 'for', 'so', 'yet']
+        sub_conj = ['after', 'although', 'because', 'even though', 'since', 'whereas', 'though', 'unless', 'which', 'whereas']
+        conj_adv = ['nevertheless', 'furthermore', 'however', 'in fact', 'hence', 'likewise', 'besides', 'consequently',
+                    'for example', 'indeed', 'still', 'that is']
+        t1 = random.sample([', ' + pc for pc in pure_conj], 2)
+        t2 = random.sample(sub_conj, 2)
+        t3 = random.sample(['; ' + ca + ', ' for ca in conj_adv], 2)
+        t4 = '; '
+        return random.choice([t1, t2, t3, t4])
 
     """ getPost
     takes a nltk.PCFG grammar
@@ -194,15 +222,16 @@ class Grammar:
 
 class Producer:
 
-    def __init__(self, user, gram):
+    def __init__(self, user, gram, wordlist):
         self.user = user
         self.userID = None
         if isinstance(gram, str):
-            self.parent_grammar = Grammar(self.induce_grammar(gram))
+            self.parent_grammar = Grammar(self.induce_grammar(gram), user)
         else: #gram is a PCFG already
             self.parent_grammar = gram
         self.child_grammars = self.get_children()
         self.grammars = self.get_grammars()
+        self.wordlist = wordlist
 
     """ inducegrammar
     return a probabilistic context-free grammar from the grammar string
