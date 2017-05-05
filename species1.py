@@ -13,32 +13,23 @@ from producer_class import Producer
 def main():
     walt = nltk.pos_tag(gutenberg.words('whitman-leaves.txt'))
     skeleton_gram_string = ''.join(open('species1.pcfg'))
+    wordbank = {
+    'Det': ['the', 'a', 'this', 'all' 'each', 'another', 'any'],
+    'Card': ['one', 'four', 'twenty'],
+    'Ord': ['first', 'last', 'second', 'next', 'other'],
+    'Quant': ['many', 'few'],
+    'Adj': ['smelly', 'hunky', 'smart', 'free', 'hungry', 'tasty', 'evil', 'loving'],
+    'SingNoun': ['computer', 'freedom', 'cube', 'stream', 'planet', 'aventurine', 'nose', 'hunk', 'hyperbolic plane'],
+    'SingPropNoun': ['Joe', 'Jake', 'Brendan', 'Adam Eck'],
+    'Prep': ['on', 'in', 'over', 'through', 'around', 'like'],
+    'PersPro': ['he', 'she', 'they', 'it'],
+    'PosPro': ['him', 'her', 'my', 'them', 'it'],
+    'LV': ['appears', 'becomes', 'grows', 'smells', 'sounds', 'tastes', 'feels', 'remains']
+    }
 
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'Det', ['the', 'a', 'this', 'all' 'each', 'another', 'any'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'Card', ['one', 'four', 'twenty'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'Ord', ['first', 'last', 'second', 'next', 'other'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'Quant', ['many', 'few'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'Adj', sample(set(
-        [word for (word, tag) in walt
-        if tag == 'JJ' and len(word) > 3]
-        ), 25))
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'SingNoun', sample(set(
-        [word for (word, tag) in walt
-        if tag == 'NN' and len(word) > 3]
-        ), 40))
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'SingPropNoun', ['Joe', 'Jake', 'Brendan', 'Adam Eck'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'Prep', ['on', 'in', 'over', 'through', 'around', 'like'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'PersPro', ['he', 'she', 'they', 'it'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'PosPro', ['him', 'her', 'my', 'them', 'it'])
-    skeleton_gram_string = addterminals(skeleton_gram_string, 'LV', ['appears', 'becomes', 'grows', 'smells', 'sounds', 'tastes', 'feels', 'remains'])
+    skeleton_gram_str = ''.join(open('species1.pcfg'))
 
-    prod = Producer('/u/_junebug_', skeleton_gram_string)
+    for w in wordbank.keys():
+        skeleton_gram_str = addterminals(skeleton_gram_str, w, wordbank[w])
 
-    for i in range(10):
-        print(prod.parent_grammar.get_post())
-
-
-
-if __name__ == '__main__':
-    main()
-
+    return skeleton_gram_str, wordbank
