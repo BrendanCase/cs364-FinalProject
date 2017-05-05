@@ -25,6 +25,8 @@ class User:
     def evaluate_iteration(self, iteration):
         for post in iteration:
             result = self.evaluator.evaluate(post.text)
+            if post.authorID in self.buddies:
+                result += 10
             if result > 0:
                 post.upvotes += 1
                 author = post.authorID
