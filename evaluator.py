@@ -11,8 +11,10 @@ class Evaluator():
         for m in self.metric: #m is one of the members of metric
             v += m.evaluate(str)
         if v < self.minusThresh:
+            self.mutate(str, -1)
             return -1
         if v > self.plusThresh:
+            self.mutate(str, 1)
             return 1
         return 0
         
