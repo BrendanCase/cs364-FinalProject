@@ -10,7 +10,7 @@ from random import sample
 from producer_class import addterminals
 from producer_class import Producer
 
-def main():
+def getGString():
     wordbank = {
     'Det': ['the', 'a', 'this', 'all' 'each', 'another', 'any'],
     'Card': ['one', 'four', 'twenty'],
