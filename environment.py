@@ -62,7 +62,8 @@ class Environment:
             c.execute('SELECT user_id FROM users WHERE name = ?', (user.name, ))
             uid = c.fetchone()[0]
             user.dbID = uid
-            user.producer.userID = uid
+            if user.isProducer:
+                user.producer.userID = uid
         conn.commit()
         conn.close()
 
