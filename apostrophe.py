@@ -15,9 +15,9 @@ class ApostropheRule(metric.Metric):
         return self.second * math.exp(aMax) + self.first * math.log((total*average) + 1) + self.zero
     
     def mutate(self, bull, change):
-        if rand.Random > .5:
+        if rand.random() > .5:
             self.second = self.second - change
-        if rand.Random >.5:
+        if rand.random() >.5:
             self.first = self.first - change
-        if rand.Random > .5:
+        if rand.random() > .5:
             self.zero = self.zero - change

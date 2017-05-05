@@ -5,7 +5,7 @@
 # ###################
 S -> NP1 LV ADJ [1.0]
 # NP1 Expansions
-NP1 -> Nom [0.4] | DetGroup Nom [0.5] | PersPro [0.1]
+NP1 -> Nom [0.4] | DetGroup Nom [0.5] | SubPersPro [0.1]
 DetGroup -> Det Ord [0.3] | DetGroup Adj [0.3] | Det [0.4]
 Nom -> Noun [0.7] | Noun PP [0.3]
 Noun -> SingNoun [0.8] | SingPropNoun [0.2]

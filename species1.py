@@ -19,8 +19,7 @@ def getGString():
     'Adj': ['smelly', 'hunky', 'smart', 'free', 'hungry', 'tasty', 'evil', 'loving'],
     'SingNoun': ['computer', 'freedom', 'cube', 'stream', 'planet', 'aventurine', 'nose', 'hunk', 'hyperbolic plane'],
     'SingPropNoun': ['Joe', 'Jake', 'Brendan', 'Adam Eck'],
-    'Prep': ['on', 'in', 'over', 'through', 'around', 'like'],
-    'PersPro': ['he', 'she', 'they', 'it'],
+    'SubPersPro': ['he', 'she', 'they', 'it'],
     'PosPro': ['him', 'her', 'my', 'them', 'it'],
     'LV': ['appears', 'becomes', 'grows', 'smells', 'sounds', 'tastes', 'feels', 'remains']
     }

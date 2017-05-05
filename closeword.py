@@ -1,5 +1,6 @@
 import metric
 from nltk.corpus import wordnet as wn
+import random
 
 CHANCE = .2
 """ WordRule
@@ -41,7 +42,7 @@ class WordRule(metric.Metric):
         """ finds the similiraty score of a given word and its most similar word in 
             a word list"""
         if len(wordList) == 0:
-            retur 0
+            return 0
         else:
             return max([self.getSimilarity(word, oWord) for oWord in wordList])
 
@@ -58,7 +59,7 @@ class WordRule(metric.Metric):
     def mutate(self, string, value):
         """ if the sentance was upvoted, remove a word from it from goodWords or put it in badWords.  If it was downvoted, remove a word from it from badwords, or add it to goodWords """
         words = string.split(' ')
-        if random.Random < chance:
+        if random.Random < .1:
             return
         if value < 0:
             word = random.choice(words)

@@ -81,13 +81,13 @@ class Grammar:
                 new_prods.append(nltk.ProbabilisticProduction(lhs, [word], prob=1/len(self.user.producer.wordlist[word_type])))
         if random.random() <= 0.05: # %5 chance to grab some random new noun or adjective
             if random.random() <= 0.5:
-                word = random.choice(set([word for (word, tag) in WordBank if tag == 'NN' and len(word) > 3]))
+                word = random.choice(list(set([word for (word, tag) in WordBank if tag == 'NN' and len(word) > 3])))
                 word_type = 'SingNoun'
             else:
-                word = random.choice(set([word for (word, tag) in WordBank if tag == 'JJ' and len(word) > 3]))
+                word = random.choice(list(set([word for (word, tag) in WordBank if tag == 'JJ' and len(word) > 3])))
                 word_type = 'Adj'
             lhs = [p.lhs() for p in self.grammar.productions() if str(p.lhs()) in word_type][0]
-            new_prods.append(nltk.ProbabilisticProduction(lhs, [word], prob=1/len(self.user.producer.wordlist[word_type])))
+            #new_prods.append(nltk.ProbabilisticProduction(lhs, [word], prob=1/len(self.user.producer.wordlist[word_type])))
         if len(new_prods) > 0:
             self.add_new(new_prods) # MUTATE TYPE 2
 
@@ -121,11 +121,15 @@ class Grammar:
                 new_prods = [p for p in new_prods if p not in prods] # temporarily remove the prods we are changing
                 change = random.gauss(0, .01/(math.sqrt(2)/math.pi))
                 fix = change/(len(prods) - 1)
+                prod_group = []
                 for p in prods:
                     if p == prod:
-                        new_prods.append(nltk.ProbabilisticProduction(p.lhs(), p.rhs(), prob=(p.prob() + change)))
+                        prod_group.append([p.lhs(), p.rhs(), p.prob() + change])
                     else:
-                        new_prods.append(nltk.ProbabilisticProduction(p.lhs(), p.rhs(), prob=(p.prob() - fix)))
+                        prod_group.append([p.lhs(), p.rhs(), p.prob() - fix])
+                prod_group[0][2] += (1 - sum([p[2] for p in prod_group]))
+                new_prods.extend([nltk.ProbabilisticProduction(p[0], p[1], prob=p[2]) for p in prod_group])
+                break
         self.grammar = nltk.PCFG(gram.start(), new_prods)
 
     """ merge
@@ -183,11 +187,13 @@ class Grammar:
     returns the string
     """
     def get_post(self):
+        print(self.grammar)
         Q = [self.grammar.start()]
         tok = []
         while len(Q) > 0:
             lhs = Q.pop(0)
             prods = self.grammar.productions(lhs)  # get the productions with this lhs NT
+            print(prods)
             prod = self._pickprod(prods)
             for sym in list(reversed(prod.rhs())):  # so we need to add all the rules to parse
                 if isinstance(sym, nltk.Nonterminal):  # if symbol is a nonterminal, add it
@@ -213,7 +219,7 @@ class Grammar:
     
     def make_post(self, user, uid, iteration):
         text = self.get_post()
-        newPost =  Post(text, user, uid, iteration)
+        newPost =  Post(text, user.name, uid, iteration)
         self.posts.append(newPost)
         return newPost
 
