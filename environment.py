@@ -11,6 +11,7 @@ class User:
         self.producer = producer
         self.evaluator = evaluator
         self.buddies = [] # list of other users, which may inspire this user's grammars.....
+        self.potBuds = {}
         self.name = name
         self.dbID = None
         self.iterations = []
@@ -26,6 +27,14 @@ class User:
             result = self.evaluator.evaluate(post.text)
             if result > 0:
                 post.upvotes += 1
+                author = post.authorID
+                if author not in self.buddies
+                    if author in self.potBuds.keys:
+                        self.potBuds[author] += 1
+                    else:
+                        self.potBuds[author] = 1
+                    if self.potBuds[author] > 9:
+                        self.buddies.append(author)
             if result < 0:
                 post.downvotes += 1
             post.score += result
