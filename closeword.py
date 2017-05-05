@@ -40,7 +40,10 @@ class WordRule(metric.Metric):
     def getRating(self, word, wordList):
         """ finds the similiraty score of a given word and its most similar word in 
             a word list"""
-        return max([self.getSimilarity(word, oWord) for oWord in wordList])
+        if len(wordList) == 0:
+            retur 0
+        else:
+            return max([self.getSimilarity(word, oWord) for oWord in wordList])
 
     def getSentanceScore(self, sentance, wordList):
         """ creates a score for a sentance by comparing the similarity of each word in
