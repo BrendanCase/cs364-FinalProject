@@ -4,13 +4,13 @@ def getGString():
     wordbank = {
         'Det' : ['the', 'this', '\'dis', 'each', 'every', 'another'],
         'Ord' : ['first', 'ninth', 'tenth', 'third', 'final'],
-        'Adj' : ['yellow', 'slimy', 'gross', 'disgusting', 'hip', 'jovial', 'lovely'],
-        'SingNoun' : ['hair', 'kiosk', 'water', 'sludge', 'pond', 'simulation', 'horse'],
-        'SingPropNoun' : ['Jim', 'Bob', 'Adam', 'Sally'],
-        'VintPast':  ['disappeared', 'agreed', 'waited'],
+        'Adj' : ['yellow', 'slimy', 'gross', 'disgusting', 'hip', 'jovial', 'lovely', 'honest', 'wet', 'blotto', 'spooky'],
+        'SingNoun' : ['hair', 'kiosk', 'water', 'sludge', 'pond', 'simulation', 'horse', 'syndicate', 'bulldog'],
+        'SingPropNoun' : ['Jim', 'Bob', 'Adam', 'Sally', 'Jeb!', 'Cher', 'Charles Shaw', 'Leonard,' 'Gordon Ramsay'],
+        'VintPast':  ['disappeared', 'agreed', 'waited', 'scratched', 'cleansed', 'predicted', 'died', 'overthrew'],
         'VintPres' : ['vanishes', 'eats', 'stands'],
         'VintFut' : ['will appear', 'will live', 'will prevail'],
-        'Adverb' : ['quickly', 'properly', 'sneakily']
+        'Adverb' : ['quickly', 'properly', 'sneakily', 'simply', 'courageously', 'covertly']
     }
 
     skeleton_gram_str = ''.join(open('species4.pcfg'))

@@ -10,9 +10,9 @@ def getGString():
     wordbank = {
         'Det' : ['the', 'this', 'that', 'each', 'every', 'another'],
         'Ord' : ['first', 'second', 'last', 'middle', 'third', 'final', 'penultimate'],
-        'Adj' : ['green', 'blue', 'winning', 'cheerful', 'elated'],
-        'SingNoun' : ['duck', 'ant', 'egg', 'window', 'cereal', 'AI project'],
-        'SingPropNoun' : ['Jack', 'Jill', 'Fred', 'George'],
+        'Adj' : ['green', 'blue', 'illiterate', 'cheerful', 'elated', 'ethereal,' 'transliterated', 'randy', 'greasy'],
+        'SingNoun' : ['duck', 'ant', 'egg', 'window', 'cereal', 'AI project', 'ulna', 'trenchcoat', 'denture'],
+        'SingPropNoun' : ['Jack', 'Jill', 'Fred', 'George', 'Doris', 'Illuminati', 'Big Brother', 'Arcady Ivanovich'],
         'AdvPlace' : ['here', 'there', 'everywhere'],
         'AdvTimePres' : ['today', 'Friday', 'this week', 'sometime'],
         'AdvTimePast' : ['yesterday', 'last Wednesday', 'last month']
