@@ -7,6 +7,7 @@ import sqlite3
 
 class User:
     def __init__(self, name, producer, isProducer, evaluator, isEvaluator, iteration_size=10):
+        self.environment = None
         self.producer = producer
         self.evaluator = evaluator
         self.buddies = [] # list of other users, which may inspire this user's grammars.....
@@ -24,17 +25,18 @@ class User:
     def evaluate_iteration(self, iteration):
         for post in iteration:
             result = self.evaluator.evaluate(post.text)
-            if post.authorID in self.buddies:
+            oUser = self.environment.lookupUser(post.author)
+            if post.authorID in [bud.name for bud in self.buddies]:
                 result += 10
             if result > 0:
                 post.upvotes += 1
-                author = post.authorID
-                if author not in self.buddies:
-                    if author in self.potBuds.keys:
-                        self.potBuds[author] += 1
+                author = self.environment.lookupUser(post.author)
+                if author.name not in [bud.name for bud in self.buddies]:
+                    if author.name in self.potBuds.keys():
+                        self.potBuds[author.name] += 1
                     else:
-                        self.potBuds[author] = 1
-                    if self.potBuds[author] > 9:
+                        self.potBuds[author.name] = 1
+                    if self.potBuds[author.name] > 9:
                         self.buddies.append(author)
             if result < 0:
                 post.downvotes += 1
@@ -51,6 +53,12 @@ class Environment:
         self.consumers = self.get_consumers()
         self.iteration = 0
         self.iterations = []
+        self.userDict = {user.name: user for user in self.users}
+        for user in self.users:
+            user.environment = self
+
+    def lookupUser(self, uname):
+        return self.userDict[uname]
     
     def setup_db(self):
         conn = sqlite3.connect(self.db)
