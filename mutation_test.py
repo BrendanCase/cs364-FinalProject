@@ -14,7 +14,7 @@ def main():
     wordbank2 = {
         'Det' : ['the', 'this', 'that', 'each', 'every', 'another'],
         'Ord' : ['first', 'second', 'last', 'middle', 'third', 'final', 'penultimate'],
-        'Adj' : ['green', 'blue', 'illiterate', 'cheerful', 'elated', 'ethereal,' 'transliterated', 'randy', 'greasy'],
+        'Adj' : ['green', 'blue', 'illiterate', 'cheerful', 'elated', 'ethereal', 'transliterated', 'randy', 'greasy'],
         'SingNoun' : ['duck', 'ant', 'egg', 'window', 'cereal', 'AI project', 'ulna', 'trenchcoat', 'denture'],
         'SingPropNoun' : ['Jack', 'Jill', 'Fred', 'George', 'Doris', 'Illuminati', 'Big Brother', 'Arcady Ivanovich'],
         'AdvPlace' : ['here', 'there', 'everywhere'],
@@ -70,12 +70,13 @@ def main():
     # prod2.parent_grammar.mutate_weights()
     # print(prod2.parent_grammar.grammar)
 
-    # prod1.parent_grammar.merge(prod1.parent_grammar._getsep(), prod2)
-    # print(prod1.parent_grammar.grammar)
-    #
-    # print(prod1.wordlist)
+    # for i in range(3):
+    #     prod1.parent_grammar.merge(prod1.parent_grammar._getsep(), prod2)
+    #     prod1.parent_grammar.separate()
+        #print(prod1.parent_grammar.grammar)
 
-    for i in range(100):
+
+    for i in range(200):
         prod1.parent_grammar.mutate()
         prod2.parent_grammar.mutate()
 

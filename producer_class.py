@@ -1,6 +1,7 @@
 import nltk
 import random
 import math
+import re
 import datetime
 from collections import defaultdict
 from nltk.corpus import gutenberg
@@ -43,8 +44,8 @@ builds a new set of rules for the producer's grammar string from these strings
 with uniform probability transitions
 """
 def addterminals(grammarString, termtype, termlist):
-    probs = [round(1/len(termlist), 5) for i in termlist]
-    probs[0] += 1 - sum(probs)
+    probs = [1/len(termlist)] * len(termlist)
+    probs[0] += 1 - math.fsum(probs)
     rule_str = termtype + ' -> '
     for prob, terminal in zip(probs, termlist):
         rule_str += makerhs(terminal, prob)
@@ -62,6 +63,7 @@ class Grammar:
         self.user = user #the user which owns this grammar
         self.grammar = grammar
         self.posts = []
+        self.mCount = 0 # how many merges this Grammar currently has
 
     def mutate(self):
         self.mutate_weights() #MUTATE TYPE 1
@@ -78,10 +80,12 @@ class Grammar:
                 new_prods.append(nw)
         if len(new_prods) > 0:
             self.add_new(new_prods) # MUTATE TYPE 2
-        if random.random() <= 0.01: # %2 chance to breed with a bud grammar
+        if random.random() <= 0.01: # %1 chance to breed with a bud grammar
             bud = random.choice(self.user.buddies)
             sep = self._getsep()
             self.merge(sep, bud.producer) # MUTATE TYPE 3
+        if random.random() <= 0.02: # %2 change to break up from a breeding
+            self.separate() # MUTATE TYPE 4
         return Grammar(self.grammar, self.user)
         
     def add_new(self, prods):
@@ -144,13 +148,16 @@ class Grammar:
                 else:
                     rhs.append(sym)
             new_prods.append(nltk.ProbabilisticProduction(lhs, rhs, prob=p.prob()))
-        # then change the start rule of this grammar
-        start_prods = self.grammar.productions(self.grammar.start())
-        new_starts = [nltk.ProbabilisticProduction(nltk.Nonterminal(str(p.lhs()) + '1'),
-                                                   [nltk.Nonterminal(str(sym)) for sym in p.rhs()],
-                                                   prob=p.prob())
-                      for p in start_prods]
-        new_prods += (new_starts + [p for p in self.grammar.productions() if p not in start_prods])
+        # then do it for orig nonterminals for later separation
+        for p in self.grammar.productions():
+            lhs = nltk.Nonterminal(str(p.lhs()) + '1')
+            rhs = []
+            for sym in p.rhs():
+                if isinstance(sym, nltk.Nonterminal):
+                    rhs.append(nltk.Nonterminal(str(sym) + '1'))
+                else:
+                    rhs.append(sym)
+            new_prods.append(nltk.ProbabilisticProduction(lhs, rhs, prob=p.prob()))
         # now make the head to combine the two production trees
         CC = nltk.Nonterminal(conjunction)
         new_prods.append(nltk.ProbabilisticProduction(CC, [conjunction], prob=1.0))
@@ -161,10 +168,30 @@ class Grammar:
         new_prods.append(head)
         try:
             self.grammar = nltk.PCFG(S, new_prods)
-            self.user.producer.wordlist = {**self.user.producer.wordlist, **budProd.wordlist}
-        except ValueError:
+            # self.user.producer.wordlist = {**self.user.producer.wordlist, **budProd.wordlist}
+            self.mCount += 1
+        except ValueError as E:
             print('ERROR3')
             pass
+
+    def separate(self):
+        gram = self.grammar
+        if self.mCount > 0:
+            start = None
+            subprods = []
+            if random.random() <= 0.5:
+                start = gram.productions(gram.start())[0].rhs()[0]
+                subprods = [p for p in gram.productions() if str(p.lhs())[-1] == str(1)]
+            else:
+                start = gram.productions(gram.start())[0].rhs()[2]
+                subprods = [p for p in gram.productions() if str(p.lhs())[-1] == str(2)]
+            try:
+                self.grammar = nltk.PCFG(start, subprods)
+                self.mCount -= 1
+            except ValueError as E:
+                print(E)
+                print('ERROR4')
+                pass
 
     def _getsep(self):
         pure_conj = ['and', 'but', 'for', 'so', 'yet']
@@ -186,7 +213,7 @@ class Grammar:
         for p in prods:
             prod_groups[p.lhs()].append(p.prob())
         for lhs in prod_groups.keys():
-            if math.fsum(prod_groups[lhs]) < 1: #need to fix one of these boys then
+            if math.fsum(prod_groups[lhs]) != 1: #need to fix one of these boys then
                 fix_p = random.choice([p for p in prods if p.lhs() is lhs])
                 # print(math.fsum(prod_groups[lhs]))
                 # print('balancing ', fix_p)
@@ -209,7 +236,8 @@ class Grammar:
         else:
             word = random.choice(list(set([word for (word, tag) in WordBank if tag == 'JJ' and len(word) > 3])))
             word_type = 'Adj'
-        lhs = [p.lhs() for p in self.grammar.productions() if str(p.lhs()) == word_type]
+        r = re.compile(r'%s[12]*' %word_type)
+        lhs = [p.lhs() for p in self.grammar.productions() if r.search(str(p.lhs()))]
         if word in self.user.producer.wordlist[word_type]:
             return None
         self.user.producer.wordlist[word_type].append(word) #remember to update the word list!
@@ -223,7 +251,8 @@ class Grammar:
             if word_type in self.user.producer.wordlist.keys():
                 done = True
         word = random.choice(budProd.wordlist[word_type])
-        lhs = [p.lhs() for p in self.grammar.productions() if str(p.lhs()) == word_type]
+        r = re.compile(r'%s[12]*' % word_type)
+        lhs = [p.lhs() for p in self.grammar.productions() if r.search(str(p.lhs()))]
         if word in self.user.producer.wordlist[word_type]:
             return None
         self.user.producer.wordlist[word_type].append(word)

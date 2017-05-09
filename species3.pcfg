@@ -13,8 +13,8 @@ Noun -> SingNoun [0.9] | SingPropNoun [0.1]
 PP -> Prep NP2 [1.0]
 NP2 -> DetGroup Nom [0.5] | Nom [0.1] | PosPro SingNoun Pos Nom [0.2] | CompPersPro [0.2]
 # Vbe EXPANSIONS #
-VbePres -> 'is' [0.7] | VingPres Adj [0.3]
-VbePast -> 'was' [0.7] | VingPast Adj [0.3]
+VbePres -> 'is' [0.7] | VingPres [0.3]
+VbePast -> 'was' [0.7] | VingPast [0.3]
 # ADJ EXPANSIONS #
 ADJ -> AdvDeg Adj [0.3] | Adj [0.3] | PP [0.4]
 # TERMINALS #
