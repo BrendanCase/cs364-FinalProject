@@ -52,28 +52,28 @@ class WordRule(metric.Metric):
         sentanceWords = sentance.split(' ')
         return sum([self.getRating(word, wordList) for word in sentanceWords])
 
-    def evaluate(self, string):
+    def evaluate(self, post):
+        string = post.text
         """ scores the sentance agaisnt the good and bad word lists"""
         return self.getSentanceScore(string, self.goodWords) - self.getSentanceScore(string, self.badWords)
 
-    def mutate(self, string, value):
+    def mutate(self, post, value):
         """ if the sentance was upvoted, remove a word from it from goodWords or put it in badWords.  If it was downvoted, remove a word from it from badwords, or add it to goodWords """
+        string = post.text
         words = string.split(' ')
-        if random.random() < .1:
+        if random.random() < .5:
             return
-        if value < 0:
-            word = random.choice(words)
-            if word in self.goodWords:
-                return
-            if word not in self.badWords:
+        if value > 0:
+            cand = [w for w in words if w not in self.goodWords]
+            if len(cand) > 0:
+                word = random.choice([w for w in words if w not in self.goodWords])
                 self.goodWords.add(word)
-            else:
-                self.badWords.remove(word)
-        elif value > 0:
-            word = random.choice(words)
-            if word in self.badWords:
-                return
-            if word not in self.goodWords:
+                if word in self.badWords and len(self.badWords) > 1:
+                    self.badWords.remove(word)
+        elif value < 0:
+            cand = [w for w in words if w not in self.badWords]
+            if len(cand) > 0:
+                word = random.choice(cand)
                 self.badWords.add(word)
-            else:
-                self.goodWords.remove(word)
+                if word in self.goodWords and len(self.goodWords) > 1:
+                    self.goodWords.remove(word)

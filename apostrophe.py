@@ -9,10 +9,11 @@ import math
 
 class ApostropheRule(metric.Metric):
     def __init__(self):
-        self.score_bump = 1
+        self.score_bump = 5
 
     def evaluate(self, post):
-        return post.count('\'') * self.score_bump
+        string = post.text
+        return string.count('\'') * self.score_bump
     
     def mutate(self, bull, change):
         pass

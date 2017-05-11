@@ -10,7 +10,6 @@ class User:
         self.environment = None
         self.producer = producer
         self.evaluator = evaluator
-        self.buddies = [] # list of other users, which may inspire this user's grammars.....
         self.potBuds = {}
         self.name = name
         self.dbID = None
@@ -22,22 +21,12 @@ class User:
     def get_iteration(self, iteration_index):
         return self.producer.get_iteration(iteration_index, self.iteration_size)
 
-    def evaluate_iteration(self, iteration):
-        for post in iteration:
-            result = self.evaluator.evaluate(post.text)
-            oUser = self.environment.lookupUser(post.author)
-            if post.authorID in [bud.name for bud in self.buddies]:
-                result += 10
+    def evaluate_iteration(self, posts):
+        for post in posts:
+            result = self.evaluator.evaluate(post)
+            oUser = post.author
             if result > 0:
                 post.upvotes += 1
-                author = self.environment.lookupUser(post.author)
-                if author.name not in [bud.name for bud in self.buddies]:
-                    if author.name in self.potBuds.keys():
-                        self.potBuds[author.name] += 1
-                    else:
-                        self.potBuds[author.name] = 1
-                    if self.potBuds[author.name] > 9:
-                        self.buddies.append(author)
             if result < 0:
                 post.downvotes += 1
             post.score += result
