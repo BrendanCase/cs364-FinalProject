@@ -7,9 +7,9 @@ def getGString():
         'Adj' : ['yellow', 'slimy', 'gross', 'disgusting', 'hip', 'jovial', 'lovely', 'honest', 'wet', 'blotto', 'spooky'],
         'SingNoun' : ['hair', 'kiosk', 'water', 'sludge', 'pond', 'simulation', 'horse', 'syndicate', 'bulldog'],
         'SingPropNoun' : ['Jim', 'Bob', 'Adam', 'Sally', 'Jeb!', 'Cher', 'Charles Shaw', 'Leonard,' 'Gordon Ramsay'],
-        'VintPast':  ['disappeared', 'agreed', 'waited', 'scratched', 'cleansed', 'predicted', 'died', 'overthrew'],
-        'VintPres' : ['vanishes', 'eats', 'stands'],
-        'VintFut' : ['will appear', 'will live', 'will prevail'],
+        'VintPast':  ['disappeared', 'agreed', 'waited', 'vomited', 'flailed', 'slept', 'died'],
+        'VintPres' : ['vanishes', 'eats', 'stands', 'frolics', 'sleeps', 'fumbles'],
+        'VintFut' : ['will appear', 'will live', 'will prevail', 'will sleep', 'will go'],
         'Adverb' : ['quickly', 'properly', 'sneakily', 'simply', 'courageously', 'covertly']
     }
 
