@@ -93,7 +93,7 @@ class Environment:
         
 
     def insert_posts(self, posts):
-        pvals = [(p.authorID, p.author, str(p.timestamp), p.text,  p.score, p.upvotes, p.downvotes, p.iteration_index) for p in posts]
+        pvals = [(p.authorID, p.author.name, str(p.timestamp), p.text,  p.score, p.upvotes, p.downvotes, p.iteration_index) for p in posts]
         conn = sqlite3.connect(self.db)
         c=conn.cursor()
         c.executemany('''INSERT INTO posts(poster_id, poster, time, post, score, upvotes, 
