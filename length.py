@@ -12,7 +12,9 @@ class LengthRule(metric.Metric):
             self.zero -= 1
     
     def evaluate(self, string):
-        return 4 * self.second * (len(string) - self.first) * (len(string) - self.zero) / ((self.first - self.zero) (self.zero - self.first))
+        num = 4 * self.second * (len(string) - self.first) * (len(string) - self.zero)
+        print(num/ ((self.first - self.zero) * (self.zero - self.first)))
+        return 4 * self.second * (len(string) - self.first) * (len(string) - self.zero) / ((self.first - self.zero)*(self.zero - self.first))
         
     def mutate(self, bull, change):
         if rand.random() > .95:
