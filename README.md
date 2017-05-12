@@ -6,7 +6,7 @@ Brendan Case
 Joe Martin
 Jackson Martin
 
-##Organization:
+Organization:
 ```
 FOLDERS:
     producer  - deprecated text generation code
