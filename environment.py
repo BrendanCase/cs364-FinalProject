@@ -1,38 +1,4 @@
-from producer_class import Producer
-import evaluator
-from length import LengthRule
-from apostrophe import ApostropheRule
-from closeword import WordRule
 import sqlite3
-
-class User:
-    def __init__(self, name, producer, isProducer, evaluator, isEvaluator, iteration_size=10):
-        self.environment = None
-        self.producer = producer
-        self.evaluator = evaluator
-        self.potBuds = {}
-        self.name = name
-        self.dbID = None
-        self.iterations = []
-        self.iteration_size=iteration_size
-        self.isProducer = isProducer
-        self.isConsumer = isEvaluator
-
-    def get_iteration(self, iteration_index):
-        return self.producer.get_iteration(iteration_index, self.iteration_size)
-
-    def evaluate_iteration(self, posts):
-        for post in posts:
-            result = self.evaluator.evaluate(post)
-            oUser = post.author
-            if result > 0:
-                post.upvotes += 1
-            if result < 0:
-                post.downvotes += 1
-            post.score += result
-
-    def mutate(self):
-        self.producer.mutate()
 
 class Environment:
     def __init__(self, spawn, db_name):
@@ -75,10 +41,10 @@ class Environment:
         conn.close()
 
     def get_producers(self):
-        return [user for user in self.users if user.isProducer]
+        return [user for user in self.users if user.producer is not None]
     
     def get_consumers(self):
-        return [user for user in self.users if user.isConsumer]
+        return [user for user in self.users if user.evaluator is not None]
 
     def run_iteration(self):
         posts = []

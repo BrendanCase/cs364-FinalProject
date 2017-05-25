@@ -1,30 +1,34 @@
-import nltk
+from length import LengthRule as L
+from trend import TrendRule as T
+from apostrophe import ApostropheRule as A
+from closeword import WordRule as W
 
 class Evaluator:
-    def __init__(self, metrics, user):
-        self.metrics = metrics #metric is the list of functions which the Evaluator evaluates the strings on
+
+    def __init__(self):
+        self.metrics = [L(), W(), A(), T()] #metric is the list of functions which the Evaluator evaluates the strings on
         self.minusThresh = -10
         self.plusThresh = 25
-        self.user = user
+        #self.user = user
     
     def evaluate(self, post):
         v = 0 #v is the value gained by the Evaluator by reading this meme
-        print(post.text)
+        #print(post.text)
         for m in self.metrics: #m is one of the members of metric
             b = m.evaluate(post)
-            print(m, b, end=' ')
+            #print(m, b, end=' ')
             v += b
-            print()
-        print('%d -> ' %v, end='')
+            #print()
+        #print('%d -> ' %v, end='')
         if v < self.minusThresh:
-            print('downvote')
+            #print('downvote')
             self.mutate(post, -1)
             return -1
         if v > self.plusThresh:
             self.mutate(post, 1)
-            print('upvote')
+            #print('upvote')
             return 1
-        print('nothing')
+        #print('nothing')
         return 0
         
     def mutate(self, post, vote):

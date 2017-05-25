@@ -2,9 +2,8 @@ import metric
 from nltk.corpus import wordnet as wn
 import random
 
-CHANCE = .2
 """ WordRule
-    A WordRule is an evaluation metric whihc compares words in a post against
+    A WordRule is an evaluation metric which compares words in a post against
     words in a list.  More specifically, it compares each word in a sentance against
     a list of good words and a list of bad words.  The more similar a word is to a
     good word, the higher the score, and conversely for a list of bad words.
@@ -16,9 +15,14 @@ CHANCE = .2
 """
 class WordRule(metric.Metric):
     
-    def __init__(self, goodWords, badWords):
-        self.goodWords = set(goodWords)
-        self.badWords = set(badWords)
+    def __init__(self):
+        self.goodWords = set(
+            [w.strip('\n') for w in random.sample(list(open('starting_vocab.txt')), 5)]
+        )
+        self.badWords = set(
+            [w.strip('\n') for w in random.sample(list(open('starting_vocab.txt')), 5)
+             if w.strip('\n') not in self.goodWords]
+        )
 
     def getLCHDepth(self, syns1, syns2):
         """ gets the depth of the lowest common hypernym of two elements

@@ -59,8 +59,8 @@ def makerhs(t, p): #return a rhs form of production string: " t [p] | "
 
 class Grammar:
     
-    def __init__(self, grammar, user):
-        self.user = user #the user which owns this grammar
+    def __init__(self, grammar, prod):
+        self.owner = prod #the user which owns this grammar
         self.grammar = grammar
         self.posts = []
         self.mCount = 0 # how many merges this Grammar currently has
@@ -68,7 +68,7 @@ class Grammar:
     def mutate(self):
         self.mutate_weights() #MUTATE TYPE 1
         new_prods = []
-        for user in self.user.buddies:
+        for user in self.owner.buddies:
             bud_prod = user.producer
             if random.random() <= 0.05: # there's a %5 chance of grabbing a bud's terminal
                 bw = self._getbudword(bud_prod)
@@ -81,12 +81,13 @@ class Grammar:
         if len(new_prods) > 0:
             self.add_new(new_prods) # MUTATE TYPE 2
         if random.random() <= 0.01: # %1 chance to breed with a bud grammar
-            bud = random.choice(self.user.buddies)
-            sep = self._getsep()
-            self.merge(sep, bud.producer) # MUTATE TYPE 3
+            if len(self.owner.buddies) > 0:
+                bud = random.choice(self.owner.buddies)
+                sep = self._getsep()
+                self.merge(sep, bud.producer) # MUTATE TYPE 3
         if random.random() <= 0.02: # %2 change to break up from a breeding
             self.separate() # MUTATE TYPE 4
-        return Grammar(self.grammar, self.user)
+        return Grammar(self.grammar, self.owner)
         
     def add_new(self, prods):
         gram = self.grammar
@@ -238,9 +239,9 @@ class Grammar:
             word_type = 'Adj'
         r = re.compile(r'%s[12]*' %word_type)
         lhs = [p.lhs() for p in self.grammar.productions() if r.search(str(p.lhs()))]
-        if word in self.user.producer.wordlist[word_type]:
+        if word in self.owner.wordlist[word_type]:
             return None
-        self.user.producer.wordlist[word_type].append(word) #remember to update the word list!
+        self.owner.wordlist[word_type].append(word) #remember to update the word list!
         return nltk.ProbabilisticProduction(lhs[0], [word], prob=1/len(lhs))
 
     def _getbudword(self, budProd):
@@ -248,14 +249,14 @@ class Grammar:
         word_type = None
         while not done:  # make sure you have a place to add this terminal
             word_type = random.choice(list(budProd.wordlist.keys()))
-            if word_type in self.user.producer.wordlist.keys():
+            if word_type in self.owner.wordlist.keys():
                 done = True
         word = random.choice(budProd.wordlist[word_type])
         r = re.compile(r'%s[12]*' % word_type)
         lhs = [p.lhs() for p in self.grammar.productions() if r.search(str(p.lhs()))]
-        if word in self.user.producer.wordlist[word_type]:
+        if word in self.owner.wordlist[word_type]:
             return None
-        self.user.producer.wordlist[word_type].append(word)
+        self.owner.wordlist[word_type].append(word)
         return nltk.ProbabilisticProduction(lhs[0], [word], prob=1/len(lhs))
 
     """ getPost
@@ -294,9 +295,9 @@ class Grammar:
                 #               <=> r in range(0, p(prod)) (inclusive)
                 # but then p(r in range(0, p(prod)) = p(prod) since r is uniform in [0,1]
     
-    def make_post(self, user, uid, iteration):
+    def make_post(self, uid, iteration):
         text = self.get_post()
-        newPost =  Post(text, user.name, uid, iteration)
+        newPost =  Post(text, self.owner.user, uid, iteration)
         self.posts.append(newPost)
         return newPost
 
@@ -308,8 +309,9 @@ class Producer:
     def __init__(self, user, gram, wordlist):
         self.user = user
         self.userID = None
+        self.buddies = []  # list of other users, which may inspire this user's grammars.....
         if isinstance(gram, str):
-            self.parent_grammar = Grammar(self.induce_grammar(gram), user)
+            self.parent_grammar = Grammar(self.induce_grammar(gram), self)
         else: #gram is a PCFG already
             self.parent_grammar = gram
         self.child_grammars = []
@@ -330,7 +332,7 @@ class Producer:
             ret = nltk.data.load('default_grammar.pcfg')
         return ret
 
-    def get_children(self, generation_size=2):
+    def get_children(self, generation_size):
         children = []
         for i in range(generation_size):
             children.append(self.parent_grammar.mutate())
@@ -339,19 +341,19 @@ class Producer:
     def get_grammars(self):
         return [self.parent_grammar] + self.child_grammars
 
-    def get_iteration(self, iteration_index, iteration_size):
+    def get_iteration(self, iteration_index, num_per_grammar):
         current_iteration = []
         for grammar in self.grammars:
-            for i in range(iteration_size):
-                current_iteration.append(grammar.make_post(self.user, self.userID, iteration_index))
+            for i in range(num_per_grammar):
+                current_iteration.append(grammar.make_post(self.userID, iteration_index))
         return current_iteration
 
-    def mutate(self):
-        best_grammar = max(self.grammars, key=lambda x: x.get_score())
-        self.parent_grammar = best_grammar
-        self.child_grammars = self.get_children()
+    def create_generation(self, generation_size):
+        self.child_grammars = self.get_children(generation_size)
         self.grammars = self.get_grammars()
 
+    def compete(self):
+        self.parent_grammar = max(self.grammars, key=lambda x: x.get_score())
 
 
 
